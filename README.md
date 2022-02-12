@@ -10,6 +10,8 @@ cargo install wasm-server-runner
 cargo install wasm-bindgen-cli
 ```
 
+To manage itch.io uploads from the command line, install [butler](https://itch.io/docs/butler/installing.html).
+
 ## Run locally
 
 ```bash
@@ -19,14 +21,26 @@ cargo run --target wasm32-unknown-unknown
 ## Deploy
 Does not work for me on Firefox for some reason, but works on Chrome.
 
-Build:
+### Build
 ```bash
 cargo build --release --target wasm32-unknown-unknown
 wasm-bindgen --out-dir out/pkg --target web target/wasm32-unknown-unknown/release/bevy_starter_project.wasm
 ```
 
-Deploy locally:
+### Deploy locally
+Build, then run this:
 ```bash
 cd out
 python3 -m http.server <port>
 ```
+
+### Deploy to [itch.io](https://itch.io)
+Build, then run this:
+```bash
+butler login # follow the instructions
+zip -r bevy-starter-project.zip out
+butler push bevy_starter_project.zip <user>/bevy-starter-project:html
+```
+If this is the first time uploading to the html channel,
+you need to go to the game page on itch.io and click on _Edit game_,
+then set it to playable in the browser.
