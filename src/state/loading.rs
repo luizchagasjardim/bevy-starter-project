@@ -13,17 +13,21 @@ impl Plugin for Loading {
             .add_system_set(SystemSet::on_enter(AppState::PreLoad).with_system(load_preloaded_textures))
             .add_system_set(SystemSet::on_update(AppState::PreLoad).with_system(check_preloaded_textures))
             .add_system_set(SystemSet::on_enter(AppState::Loading).with_system(setup_loading_bar))
-            .add_system_set(SystemSet::on_enter(AppState::Loading).with_system(load_character_textures))
+            .add_system_set(SystemSet::on_enter(AppState::Loading).with_system(load_textures))
             .add_system_set(SystemSet::on_update(AppState::Loading).with_system(check_textures))
             .add_system_set(SystemSet::on_exit(AppState::Loading).with_system(remove_loading_bar));
     }
 }
 
+const FULL_HEART: &str = "pixel-platformer/Tiles/tile_0044.png";
+const HALF_HEART: &str = "pixel-platformer/Tiles/tile_0045.png";
+const EMPTY_HEART: &str = "pixel-platformer/Tiles/tile_0046.png";
+
 fn load_preloaded_textures(mut sprite_handles: ResMut<SpriteHandles>, asset_server: Res<AssetServer>) {
     let handles = vec![
-        asset_server.load("pixel-platformer/Tiles/tile_0044.png"),
-        asset_server.load("pixel-platformer/Tiles/tile_0045.png"),
-        asset_server.load("pixel-platformer/Tiles/tile_0046.png"),
+        asset_server.load(FULL_HEART),
+        asset_server.load(HALF_HEART),
+        asset_server.load(EMPTY_HEART),
     ];
     sprite_handles.handles.insert("loading", handles);
 }
@@ -43,6 +47,18 @@ fn check_preloaded_textures(
 struct LoadingBar {
     lower_bound: f32,
     upper_bound: f32,
+}
+
+impl LoadingBar {
+    fn get_image(&self, percent: f32) -> &str {
+        if percent < self.lower_bound {
+            EMPTY_HEART
+        } else if percent >= self.upper_bound {
+            FULL_HEART
+        } else {
+            HALF_HEART
+        }
+    }
 }
 
 pub fn setup_loading_bar(
@@ -79,7 +95,7 @@ pub fn setup_loading_bar(
     }
 }
 
-fn load_character_textures(mut sprite_handles: ResMut<SpriteHandles>, asset_server: Res<AssetServer>) {
+fn load_textures(mut sprite_handles: ResMut<SpriteHandles>, asset_server: Res<AssetServer>) {
     let mut load_impl = |name, start, number_of_frames| {
         let handles = (start..start+number_of_frames)
             .map(|i| format!["pixel-platformer/Characters/character_00{:0>2}.png", i])
@@ -87,6 +103,7 @@ fn load_character_textures(mut sprite_handles: ResMut<SpriteHandles>, asset_serv
             .collect();
         sprite_handles.handles.insert(name, handles);
     };
+    //characters
     load_impl("green", 0, 2);
     load_impl("blue", 2, 2);
     load_impl("pink", 4, 2);
@@ -99,13 +116,16 @@ fn load_character_textures(mut sprite_handles: ResMut<SpriteHandles>, asset_serv
     load_impl("baby jeremy", 18, 3);
     load_impl("jeremy", 21, 3);
     load_impl("angel", 24, 3);
+    //background
+    load_impl("angel", 24, 3);
 }
 
 fn check_textures(
     mut state: ResMut<State<AppState>>,
     sprite_handles: ResMut<SpriteHandles>,
     asset_server: Res<AssetServer>,
-    mut query: Query<(&LoadingBar, &mut TextureAtlasSprite)>,
+    texture_atlases: Res<Assets<TextureAtlas>>,
+    mut query: Query<(&LoadingBar, &mut TextureAtlasSprite, &Handle<TextureAtlas>)>,
 ) {
     let ids = sprite_handles.id_list();
     let mut total = 0;
@@ -123,21 +143,17 @@ fn check_textures(
         return;
     }
     let percent = (100*loaded) as f32 / total as f32;
-    for (loading_bar, mut sprite) in query.iter_mut() {
-        //TODO: these hardcoded values are probably not guaranteed to work
-        if percent < loading_bar.lower_bound {
-            sprite.index = 2;
-        } else if percent > loading_bar.upper_bound {
-            sprite.index = 1;
-        } else {
-            sprite.index = 0;
-        }
+    for (loading_bar, mut sprite, texture_atlas_handle) in query.iter_mut() {
+        let image = loading_bar.get_image(percent);
+        let handle = asset_server.get_handle(image);
+        let texture_atlas = texture_atlases.get(texture_atlas_handle).unwrap();
+        sprite.index = texture_atlas.get_texture_index(&handle).unwrap();
     }
 }
 
 fn remove_loading_bar(
     mut commands: Commands,
-    mut query: Query<(Entity, &LoadingBar)>,
+    query: Query<(Entity, &LoadingBar)>,
 ) {
     for (id, _) in query.iter() {
         commands.entity(id).despawn();
