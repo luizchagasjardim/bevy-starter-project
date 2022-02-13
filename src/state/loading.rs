@@ -12,6 +12,7 @@ impl Plugin for Loading {
             .add_state(AppState::PreLoad)
             .add_system_set(SystemSet::on_enter(AppState::PreLoad).with_system(load_preloaded_textures))
             .add_system_set(SystemSet::on_update(AppState::PreLoad).with_system(check_preloaded_textures))
+            .add_system_set(SystemSet::on_enter(AppState::Loading).with_system(spawn_camera))
             .add_system_set(SystemSet::on_enter(AppState::Loading).with_system(setup_loading_bar))
             .add_system_set(SystemSet::on_enter(AppState::Loading).with_system(load_textures))
             .add_system_set(SystemSet::on_update(AppState::Loading).with_system(check_textures))
@@ -20,7 +21,8 @@ impl Plugin for Loading {
 }
 
 fn load_preloaded_textures(mut sprite_handles: ResMut<SpriteHandles>, asset_server: Res<AssetServer>) {
-    sprite_handles.handles.insert("loading", load_sprites(asset_server));
+    let handles = load_sprites("heart", asset_server);
+    sprite_handles.handles.insert("loading", handles);
 }
 
 fn check_preloaded_textures(
@@ -32,6 +34,10 @@ fn check_preloaded_textures(
     if let LoadState::Loaded = asset_server.get_group_load_state(ids) {
         state.set(AppState::Loading).unwrap();
     }
+}
+
+fn spawn_camera(mut commands: Commands) {
+    commands.spawn_bundle(OrthographicCameraBundle::new_2d());
 }
 
 #[derive(Component)]
@@ -52,32 +58,27 @@ impl LoadingBar {
     }
 }
 
-pub fn setup_loading_bar(
+fn setup_loading_bar(
     mut commands: Commands,
     sprite_handles: Res<SpriteHandles>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
     mut textures: ResMut<Assets<Image>>,
 ) {
-    let mut spawn = |name| {
-        let mut texture_atlas_builder = TextureAtlasBuilder::default();
-        for handle in sprite_handles.handles[name].iter() {
-            let texture = textures.get(handle).unwrap();
-            texture_atlas_builder.add_texture(handle.clone(), texture);
-        }
-        let texture_atlas = texture_atlas_builder.finish(&mut textures).unwrap();
-        texture_atlases.add(texture_atlas)
-    };
-
-    commands.spawn_bundle(OrthographicCameraBundle::new_2d());
+    let texture_atlas= spawn(
+        "loading",
+        &sprite_handles,
+        &mut texture_atlases,
+        &mut textures,
+    );
     let n = 10;
+    let interval = 100.0 / n as f32;
     for i in 0..n {
         let position = Vec3::new(-120.0 + 24.0 * (i as f32), -144.0, 0.0);
-        let interval = 100.0 / n as f32;
         let lower_bound = i as f32 * interval;
         let upper_bound = lower_bound + interval;
         commands
             .spawn_bundle(SpriteSheetBundle {
-                texture_atlas: spawn("loading"),
+                texture_atlas: texture_atlas.clone(),
                 transform: Transform::from_translation(position),
                 ..Default::default()
             })
