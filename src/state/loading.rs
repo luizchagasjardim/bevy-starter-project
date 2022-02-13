@@ -22,9 +22,9 @@ impl Plugin for Loading {
 
 fn load_preloaded_textures(mut sprite_handles: ResMut<SpriteHandles>, asset_server: Res<AssetServer>) {
     let handles = vec![
-        asset_server.load(SPRITES["full heart"]),
-        asset_server.load(SPRITES["half heart"]),
-        asset_server.load(SPRITES["empty heart"]),
+        asset_server.load(SPRITES["heart"]["full"]),
+        asset_server.load(SPRITES["heart"]["half"]),
+        asset_server.load(SPRITES["heart"]["empty"]),
     ];
     sprite_handles.handles.insert("loading", handles);
 }
@@ -49,11 +49,11 @@ struct LoadingBar {
 impl LoadingBar {
     fn get_image(&self, percent: f32) -> &str {
         if percent < self.lower_bound {
-            SPRITES["empty heart"]
+            SPRITES["heart"]["empty"]
         } else if percent >= self.upper_bound {
-            SPRITES["full heart"]
+            SPRITES["heart"]["full"]
         } else {
-            SPRITES["empty heart"]
+            SPRITES["heart"]["half"]
         }
     }
 }

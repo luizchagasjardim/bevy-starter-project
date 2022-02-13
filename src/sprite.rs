@@ -3,8 +3,6 @@ use std::collections::HashMap;
 use bevy::prelude::*;
 use bevy::asset::HandleId;
 
-use phf::phf_map;
-
 #[derive(Default)]
 pub struct SpriteHandles {
     pub handles: HashMap<&'static str, Vec<Handle<Image>>>,
@@ -31,8 +29,12 @@ impl SpriteTimer {
     }
 }
 
-pub const SPRITES: phf::Map<&'static str, &'static str> = phf_map! {
-    "full heart" => "pixel-platformer/Tiles/tile_0044.png",
-    "half heart" => "pixel-platformer/Tiles/tile_0045.png",
-    "empty heart" => "pixel-platformer/Tiles/tile_0046.png",
-};
+lazy_static!{
+pub static ref SPRITES: HashMap<&'static str, HashMap<&'static str, &'static str>> = HashMap::from([
+    ("heart", HashMap::from([
+        ("full", "pixel-platformer/Tiles/tile_0044.png"),
+        ("half", "pixel-platformer/Tiles/tile_0045.png"),
+        ("empty", "pixel-platformer/Tiles/tile_0046.png"),
+    ])),
+]);
+}
