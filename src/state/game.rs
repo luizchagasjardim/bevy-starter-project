@@ -14,21 +14,19 @@ impl Plugin for Game {
 }
 
 
-pub fn setup(
+fn setup(
     mut commands: Commands,
     sprite_handles: Res<SpriteHandles>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
     mut textures: ResMut<Assets<Image>>,
 ) {
     let mut spawn = |name| {
-        let mut texture_atlas_builder = TextureAtlasBuilder::default();
-        for handle in sprite_handles.handles[name].iter() {
-            let texture = textures.get(handle).unwrap();
-            texture_atlas_builder.add_texture(handle.clone(), texture);
-        }
-
-        let texture_atlas = texture_atlas_builder.finish(&mut textures).unwrap();
-        texture_atlases.add(texture_atlas)
+        spawn(
+            name,
+            &sprite_handles,
+            &mut texture_atlases,
+            &mut textures,
+        )
     };
 
     commands.spawn_bundle(OrthographicCameraBundle::new_2d());
@@ -75,7 +73,7 @@ pub fn setup(
         });
 }
 
-pub fn animate_sprite_system(
+fn animate_sprite_system(
     time: Res<Time>,
     texture_atlases: Res<Assets<TextureAtlas>>,
     mut query: Query<(&mut SpriteTimer, &mut TextureAtlasSprite, &Handle<TextureAtlas>)>,
