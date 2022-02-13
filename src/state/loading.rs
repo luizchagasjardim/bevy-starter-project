@@ -20,10 +20,7 @@ impl Plugin for Loading {
 }
 
 fn load_preloaded_textures(mut sprite_handles: ResMut<SpriteHandles>, asset_server: Res<AssetServer>) {
-    let handles = SPRITES["heart"].iter().map(
-        |(_, &path)| asset_server.load(path)
-    ).collect();
-    sprite_handles.handles.insert("loading", handles);
+    sprite_handles.handles.insert("loading", load_sprites(asset_server));
 }
 
 fn check_preloaded_textures(
@@ -67,7 +64,6 @@ pub fn setup_loading_bar(
             let texture = textures.get(handle).unwrap();
             texture_atlas_builder.add_texture(handle.clone(), texture);
         }
-
         let texture_atlas = texture_atlas_builder.finish(&mut textures).unwrap();
         texture_atlases.add(texture_atlas)
     };

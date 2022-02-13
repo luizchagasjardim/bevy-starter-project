@@ -38,3 +38,9 @@ pub static ref SPRITES: HashMap<&'static str, HashMap<&'static str, &'static str
     ])),
 ]);
 }
+
+fn load_sprites(name: &str, asset_server: Res<AssetServer>) -> Vec<Handle<Image>> {
+    SPRITES[name].iter().map(
+        |(_, &path)| asset_server.load(path)
+    ).collect()
+}
