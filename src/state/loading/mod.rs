@@ -4,6 +4,9 @@ use bevy::prelude::*;
 use crate::state::AppState;
 use crate::sprite::*;
 
+mod loading_bar;
+use loading_bar::LoadingBar;
+
 pub struct Loading;
 
 impl Plugin for Loading {
@@ -38,24 +41,6 @@ fn check_preloaded_textures(
 
 fn spawn_camera(mut commands: Commands) {
     commands.spawn_bundle(OrthographicCameraBundle::new_2d());
-}
-
-#[derive(Component)]
-struct LoadingBar {
-    lower_bound: f32,
-    upper_bound: f32,
-}
-
-impl LoadingBar {
-    fn get_image(&self, percent: f32) -> &str {
-        if percent < self.lower_bound {
-            SPRITES["heart"]["empty"]
-        } else if percent >= self.upper_bound {
-            SPRITES["heart"]["full"]
-        } else {
-            SPRITES["heart"]["half"]
-        }
-    }
 }
 
 fn setup_loading_bar(

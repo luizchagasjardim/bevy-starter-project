@@ -13,7 +13,6 @@ impl Plugin for Game {
     }
 }
 
-
 fn setup(
     mut commands: Commands,
     sprite_handles: Res<SpriteHandles>,
