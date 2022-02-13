@@ -19,15 +19,12 @@ impl Plugin for Loading {
     }
 }
 
-const FULL_HEART: &str = "pixel-platformer/Tiles/tile_0044.png";
-const HALF_HEART: &str = "pixel-platformer/Tiles/tile_0045.png";
-const EMPTY_HEART: &str = "pixel-platformer/Tiles/tile_0046.png";
 
 fn load_preloaded_textures(mut sprite_handles: ResMut<SpriteHandles>, asset_server: Res<AssetServer>) {
     let handles = vec![
-        asset_server.load(FULL_HEART),
-        asset_server.load(HALF_HEART),
-        asset_server.load(EMPTY_HEART),
+        asset_server.load(SPRITES["full heart"]),
+        asset_server.load(SPRITES["half heart"]),
+        asset_server.load(SPRITES["empty heart"]),
     ];
     sprite_handles.handles.insert("loading", handles);
 }
@@ -52,11 +49,11 @@ struct LoadingBar {
 impl LoadingBar {
     fn get_image(&self, percent: f32) -> &str {
         if percent < self.lower_bound {
-            EMPTY_HEART
+            SPRITES["empty heart"]
         } else if percent >= self.upper_bound {
-            FULL_HEART
+            SPRITES["full heart"]
         } else {
-            HALF_HEART
+            SPRITES["empty heart"]
         }
     }
 }
