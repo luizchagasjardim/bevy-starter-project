@@ -41,7 +41,7 @@ Build, then run this:
 ```bash
 butler login # follow the instructions
 zip -r bevy-starter-project.zip out
-butler push bevy_starter_project.zip <user>/bevy-starter-project:html
+butler push bevy-starter-project.zip <user>/bevy-starter-project:html
 ```
 If this is the first time uploading to the html channel,
 you need to go to the game page on itch.io and click on _Edit game_,
