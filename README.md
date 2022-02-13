@@ -15,16 +15,18 @@ To manage itch.io uploads from the command line, install [butler](https://itch.i
 ## Run locally
 
 ```bash
-cargo run --target wasm32-unknown-unknown
+cargo run
 ```
+TODO: currently not working with assets
 
 ## Deploy
 Does not work for me on Firefox for some reason, but works on Chrome.
 
 ### Build
 ```bash
-cargo build --release --target wasm32-unknown-unknown
+cargo build --release
 wasm-bindgen --out-dir out/pkg --target web target/wasm32-unknown-unknown/release/bevy_starter_project.wasm
+rsync -a assets/ out/assets/
 ```
 
 ### Deploy locally
