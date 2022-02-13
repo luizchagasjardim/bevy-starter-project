@@ -36,10 +36,61 @@ pub static ref SPRITES: HashMap<&'static str, HashMap<&'static str, &'static str
         ("half", "pixel-platformer/Tiles/tile_0045.png"),
         ("empty", "pixel-platformer/Tiles/tile_0046.png"),
     ])),
+    ("green", HashMap::from([
+        ("closed", "pixel-platformer/Characters/character_0000.png"),
+        ("open", "pixel-platformer/Characters/character_0001.png"),
+    ])),
+    ("blue", HashMap::from([
+        ("closed", "pixel-platformer/Characters/character_0002.png"),
+        ("open", "pixel-platformer/Characters/character_0003.png"),
+    ])),
+    ("pink", HashMap::from([
+        ("closed", "pixel-platformer/Characters/character_0004.png"),
+        ("open", "pixel-platformer/Characters/character_0005.png"),
+    ])),
+    ("yellow", HashMap::from([
+        ("closed", "pixel-platformer/Characters/character_0006.png"),
+        ("open", "pixel-platformer/Characters/character_0007.png"),
+    ])),
+    ("spike ball", HashMap::from([
+        ("idle", "pixel-platformer/Characters/character_0008.png"),
+    ])),
+    ("beige", HashMap::from([
+        ("closed", "pixel-platformer/Characters/character_0009.png"),
+        ("open", "pixel-platformer/Characters/character_0010.png"),
+    ])),
+    ("fish", HashMap::from([
+        ("closed", "pixel-platformer/Characters/character_0011.png"),
+        ("open", "pixel-platformer/Characters/character_0012.png"),
+    ])),
+    ("block", HashMap::from([
+        ("surprised", "pixel-platformer/Characters/character_0013.png"),
+        ("pissed", "pixel-platformer/Characters/character_0014.png"),
+    ])),
+    ("hedgehog", HashMap::from([
+        ("idle0", "pixel-platformer/Characters/character_0015.png"),
+        ("idle1", "pixel-platformer/Characters/character_0016.png"),
+        ("idle2", "pixel-platformer/Characters/character_0017.png"),
+    ])),
+    ("baby jeremy", HashMap::from([
+        ("idle0", "pixel-platformer/Characters/character_0018.png"),
+        ("idle1", "pixel-platformer/Characters/character_0019.png"),
+        ("idle2", "pixel-platformer/Characters/character_0020.png"),
+    ])),
+    ("jeremy", HashMap::from([
+        ("idle0", "pixel-platformer/Characters/character_0021.png"),
+        ("idle1", "pixel-platformer/Characters/character_0022.png"),
+        ("idle2", "pixel-platformer/Characters/character_0023.png"),
+    ])),
+    ("angel", HashMap::from([
+        ("idle0", "pixel-platformer/Characters/character_0024.png"),
+        ("idle1", "pixel-platformer/Characters/character_0025.png"),
+        ("idle2", "pixel-platformer/Characters/character_0026.png"),
+    ])),
 ]);
 }
 
-pub fn load_sprites(name: &str, asset_server: Res<AssetServer>) -> Vec<Handle<Image>> {
+pub fn load_sprites(name: &str, asset_server: &Res<AssetServer>) -> Vec<Handle<Image>> {
     SPRITES[name].iter().map(
         |(_, &path)| asset_server.load(path)
     ).collect()

@@ -21,7 +21,7 @@ impl Plugin for Loading {
 }
 
 fn load_preloaded_textures(mut sprite_handles: ResMut<SpriteHandles>, asset_server: Res<AssetServer>) {
-    let handles = load_sprites("heart", asset_server);
+    let handles = load_sprites("heart", &asset_server);
     sprite_handles.handles.insert("loading", handles);
 }
 
@@ -87,27 +87,22 @@ fn setup_loading_bar(
 }
 
 fn load_textures(mut sprite_handles: ResMut<SpriteHandles>, asset_server: Res<AssetServer>) {
-    let mut load = |path, name, start, number_of_frames| {
-        let handles = (start..start+number_of_frames)
-            .map(|i| asset_server.load(format!["{}_{:0>4}.png", path, i].as_str()))
-            .collect();
+    let mut load = |name| {
+        let handles = load_sprites(name, &asset_server);
         sprite_handles.handles.insert(name, handles);
     };
-    let mut load_character = |name, start, number_of_frames| {
-        load("pixel-platformer/Characters/character", name, start, number_of_frames);
-    };
-    load_character("green", 0, 2);
-    load_character("blue", 2, 2);
-    load_character("pink", 4, 2);
-    load_character("yellow", 6, 2);
-    load_character("spike ball", 8, 1);
-    load_character("beige", 9, 2);
-    load_character("fish", 11, 2);
-    load_character("block", 13, 2);
-    load_character("hedgehog", 15, 3);
-    load_character("baby jeremy", 18, 3);
-    load_character("jeremy", 21, 3);
-    load_character("angel", 24, 3);
+    load("green");
+    load("blue");
+    load("pink");
+    load("yellow");
+    load("spike ball");
+    load("beige");
+    load("fish");
+    load("block");
+    load("hedgehog");
+    load("baby jeremy");
+    load("jeremy");
+    load("angel");
 }
 
 fn check_textures(
