@@ -3,8 +3,8 @@ use bevy::prelude::*;
 use crate::state::AppState;
 use crate::sprite::*;
 
-mod controls;
-use controls::*;
+mod player;
+use player::*;
 
 mod velocity;
 use velocity::*;
@@ -45,8 +45,7 @@ fn spawn_characters(
             ..Default::default()
         })
         .insert(SpriteTimer::from_seconds(0.2))
-        .insert(Velocity::default())
-        .insert(Controls::default());
+        .insert_bundle(PlayerBundle::default());
     commands
         .spawn_bundle(SpriteSheetBundle {
             texture_atlas: spawn("blue"),
