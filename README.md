@@ -17,7 +17,6 @@ To manage itch.io uploads from the command line, install [butler](https://itch.i
 ```bash
 cargo run
 ```
-TODO: currently not working with assets
 
 ## Deploy
 Does not work for me on Firefox for some reason, but works on Chrome.
