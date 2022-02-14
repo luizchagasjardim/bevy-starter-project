@@ -14,14 +14,14 @@ pub struct Game;
 impl Plugin for Game {
     fn build(&self, app: &mut App) {
         app
-            .add_system_set(SystemSet::on_enter(AppState::Game).with_system(setup))
+            .add_system_set(SystemSet::on_enter(AppState::Game).with_system(spawn_characters))
             .add_system_set(SystemSet::on_update(AppState::Game).with_system(animation))
             .add_system_set(SystemSet::on_update(AppState::Game).with_system(input))
             .add_system_set(SystemSet::on_update(AppState::Game).with_system(movement));
     }
 }
 
-fn setup(
+fn spawn_characters(
     mut commands: Commands,
     sprite_handles: Res<SpriteHandles>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
@@ -35,12 +35,13 @@ fn setup(
             &mut textures,
         )
     };
+    let character_size = 24.0;
+    let base_position = Vec3::new(character_size, 0.0, 0.0);
 
-    commands.spawn_bundle(OrthographicCameraBundle::new_2d());
     commands
         .spawn_bundle(SpriteSheetBundle {
             texture_atlas: spawn("green"),
-            transform: Transform::from_translation(Vec3::new(-144.0, 0.0, 0.0)),
+            transform: Transform::from_translation(-6.0*base_position),
             ..Default::default()
         })
         .insert(SpriteTimer::from_seconds(0.2))
@@ -49,35 +50,35 @@ fn setup(
     commands
         .spawn_bundle(SpriteSheetBundle {
             texture_atlas: spawn("blue"),
-            transform: Transform::from_translation(Vec3::new(-96.0, 0.0, 0.0)),
+            transform: Transform::from_translation(-4.0*base_position),
             ..Default::default()
         })
         .insert(SpriteTimer::from_seconds(0.2));
     commands
         .spawn_bundle(SpriteSheetBundle {
             texture_atlas: spawn("pink"),
-            transform: Transform::from_translation(Vec3::new(-48.0, 0.0, 0.0)),
+            transform: Transform::from_translation(-2.0*base_position),
             ..Default::default()
         })
         .insert(SpriteTimer::from_seconds(0.2));
     commands
         .spawn_bundle(SpriteSheetBundle {
             texture_atlas: spawn("yellow"),
-            transform: Transform::from_translation(Vec3::new(0.0, 0.0, 0.0)),
+            transform: Transform::from_translation(0.0*base_position),
             ..Default::default()
         })
         .insert(SpriteTimer::from_seconds(0.2));
     commands
         .spawn_bundle(SpriteSheetBundle {
             texture_atlas: spawn("jeremy"),
-            transform: Transform::from_translation(Vec3::new(48.0, 0.0, 0.0)),
+            transform: Transform::from_translation(2.0*base_position),
             ..Default::default()
         })
         .insert(SpriteTimer::from_seconds(0.5));
     commands
         .spawn_bundle(SpriteSheetBundle {
             texture_atlas: spawn("block"),
-            transform: Transform::from_translation(Vec3::new(96.0, 0.0, 0.0)),
+            transform: Transform::from_translation(4.0*base_position),
             ..Default::default()
         });
 }
