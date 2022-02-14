@@ -17,7 +17,8 @@ impl Plugin for Game {
             .add_system_set(SystemSet::on_enter(AppState::Game).with_system(spawn_characters))
             .add_system_set(SystemSet::on_update(AppState::Game).with_system(animation))
             .add_system_set(SystemSet::on_update(AppState::Game).with_system(input))
-            .add_system_set(SystemSet::on_update(AppState::Game).with_system(movement));
+            .add_system_set(SystemSet::on_update(AppState::Game).with_system(movement))
+            .add_system_set(SystemSet::on_update(AppState::Game).with_system(camera_movement));
     }
 }
 
@@ -119,4 +120,13 @@ fn movement(
     for (velocity, mut transform) in query.iter_mut() {
         transform.translation += velocity.0 * time.delta_seconds();
     }
+}
+
+fn camera_movement(
+    player_query: Query<(&PlayerCharacter, &Transform)>,
+    mut camera_query: Query<(&Camera, &mut Transform), Without<PlayerCharacter>>,
+) {
+    let (_, player_position) = player_query.single();
+    let (_, mut camera_position) = camera_query.single_mut();
+    camera_position.translation = player_position.translation;
 }
