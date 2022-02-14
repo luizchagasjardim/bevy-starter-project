@@ -3,6 +3,9 @@ use bevy::prelude::*;
 use crate::state::AppState;
 use crate::sprite::*;
 
+mod controls;
+use controls::*;
+
 mod velocity;
 use velocity::*;
 
@@ -13,6 +16,7 @@ impl Plugin for Game {
         app
             .add_system_set(SystemSet::on_enter(AppState::Game).with_system(setup))
             .add_system_set(SystemSet::on_update(AppState::Game).with_system(animation))
+            .add_system_set(SystemSet::on_update(AppState::Game).with_system(input))
             .add_system_set(SystemSet::on_update(AppState::Game).with_system(movement));
     }
 }
@@ -40,7 +44,8 @@ fn setup(
             ..Default::default()
         })
         .insert(SpriteTimer::from_seconds(0.2))
-        .insert(Velocity(Vec3::new(-10.0, 0.0, 0.0)));
+        .insert(Velocity::default())
+        .insert(Controls::default());
     commands
         .spawn_bundle(SpriteSheetBundle {
             texture_atlas: spawn("blue"),
@@ -91,20 +96,28 @@ fn animation(
     }
 }
 
+fn input(
+    input: Res<Input<KeyCode>>,
+    mut query: Query<(&Controls, &mut Velocity)>,
+) {
+    for (controls, mut velocity) in query.iter_mut() {
+        if input.pressed(controls.left) && input.pressed(controls.right) {
+            velocity.decrease();
+        } else if input.pressed(controls.left) {
+            velocity.increase_left();
+        } else if input.pressed(controls.right) {
+            velocity.increase_right();
+        } else {
+            velocity.decrease();
+        }
+    }
+}
+
 fn movement(
     time: Res<Time>,
     mut query: Query<(&Velocity, &mut Transform)>,
 ) {
     for (velocity, mut transform) in query.iter_mut() {
         transform.translation += velocity.0 * time.delta_seconds();
-        /*
-        let ds = dt * self.speed * self.facing.as_vec();
-        self.position += ds;
-        self.position
-        let position = char.update_position(time.delta_seconds());
-        let translation = &mut transform.translation;
-        translation.x = position.x;
-        translation.y = position.y;
-        */
     }
 }
