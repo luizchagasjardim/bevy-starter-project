@@ -123,10 +123,24 @@ fn movement(
 }
 
 fn camera_movement(
+    windows: Res<Windows>,
     player_query: Query<(&PlayerCharacter, &Transform)>,
     mut camera_query: Query<(&Camera, &mut Transform), Without<PlayerCharacter>>,
 ) {
+    let window = windows.get_primary().unwrap();
+    let horizontal_limit = window.width() * 0.3;
+
     let (_, player_position) = player_query.single();
+    let player_position = player_position.translation.x;
+
     let (_, mut camera_position) = camera_query.single_mut();
-    camera_position.translation = player_position.translation;
+
+    let left_limit = camera_position.translation.x - horizontal_limit;
+    let right_limit = camera_position.translation.x + horizontal_limit;
+
+    if player_position < left_limit {
+        camera_position.translation.x = player_position + horizontal_limit;
+    } else if player_position > right_limit {
+        camera_position.translation.x = player_position - horizontal_limit;
+    }
 }
