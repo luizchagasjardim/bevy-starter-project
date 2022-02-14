@@ -31,10 +31,25 @@ impl SpriteTimer {
 
 lazy_static!{
 pub static ref SPRITES: HashMap<&'static str, HashMap<&'static str, &'static str>> = HashMap::from([
-    ("heart", HashMap::from([
-        ("full", "pixel-platformer/Tiles/tile_0044.png"),
-        ("half", "pixel-platformer/Tiles/tile_0045.png"),
-        ("empty", "pixel-platformer/Tiles/tile_0046.png"),
+    ("blue background", HashMap::from([
+        ("empty", "pixel-platformer/Background/background_0000.png"),
+        ("half", "pixel-platformer/Background/background_0001.png"),
+        ("full", "pixel-platformer/Background/background_0002.png"),
+    ])),
+    ("brown background", HashMap::from([
+        ("empty", "pixel-platformer/Background/background_0003.png"),
+        ("half", "pixel-platformer/Background/background_0004.png"),
+        ("full", "pixel-platformer/Background/background_0005.png"),
+    ])),
+    ("white background", HashMap::from([
+        ("empty", "pixel-platformer/Background/background_0006.png"),
+        ("half", "pixel-platformer/Background/background_0007.png"),
+        ("full", "pixel-platformer/Background/background_0008.png"),
+    ])),
+    ("green background", HashMap::from([
+        ("empty", "pixel-platformer/Background/background_0009.png"),
+        ("half", "pixel-platformer/Background/background_0010.png"),
+        ("full", "pixel-platformer/Background/background_0011.png"),
     ])),
     ("green", HashMap::from([
         ("closed", "pixel-platformer/Characters/character_0000.png"),
@@ -86,6 +101,11 @@ pub static ref SPRITES: HashMap<&'static str, HashMap<&'static str, &'static str
         ("idle0", "pixel-platformer/Characters/character_0024.png"),
         ("idle1", "pixel-platformer/Characters/character_0025.png"),
         ("idle2", "pixel-platformer/Characters/character_0026.png"),
+    ])),
+    ("heart", HashMap::from([
+        ("full", "pixel-platformer/Tiles/tile_0044.png"),
+        ("half", "pixel-platformer/Tiles/tile_0045.png"),
+        ("empty", "pixel-platformer/Tiles/tile_0046.png"),
     ])),
 ]);
 }
