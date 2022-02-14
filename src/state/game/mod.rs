@@ -101,15 +101,14 @@ fn input(
     mut query: Query<(&Controls, &mut Velocity)>,
 ) {
     for (controls, mut velocity) in query.iter_mut() {
-        if input.pressed(controls.left) && input.pressed(controls.right) {
-            velocity.decrease();
-        } else if input.pressed(controls.left) {
-            velocity.increase_left();
-        } else if input.pressed(controls.right) {
-            velocity.increase_right();
-        } else {
-            velocity.decrease();
+        let mut direction = 0;
+        if input.pressed(controls.left) {
+            direction -= 1;
         }
+        if input.pressed(controls.right) {
+            direction += 1;
+        }
+        velocity.update(direction);
     }
 }
 
