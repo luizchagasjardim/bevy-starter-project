@@ -76,18 +76,9 @@ fn load_textures(mut sprite_handles: ResMut<SpriteHandles>, asset_server: Res<As
         let handles = load_sprites(name, &asset_server);
         sprite_handles.handles.insert(name, handles);
     };
-    load("green");
-    load("blue");
-    load("pink");
-    load("yellow");
-    load("spike ball");
-    load("beige");
-    load("fish");
-    load("block");
-    load("hedgehog");
-    load("baby jeremy");
-    load("jeremy");
-    load("angel");
+    for (key, _) in SPRITES.iter() {
+        load(key);
+    }
 }
 
 fn check_textures(
