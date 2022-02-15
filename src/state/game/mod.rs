@@ -64,10 +64,22 @@ fn spawn_map(
             let image = match tile {
                 Tile::EMPTY => None,
                 Tile::GROUND => {
-                    let image = if map[i][j+1] == Tile::EMPTY {
-                        "grass"
-                    } else {
-                        if (i+j)%2 == 0 { "full0" } else { "full1" }
+                    let left = if i > 0 { map[i-1][j] } else { Tile::EMPTY };
+                    let right = if i+1 < map.len() { map[i+1][j] } else { Tile::EMPTY };
+                    let below = if j > 0 { map[i][j-1] } else { Tile::EMPTY };
+                    let above = if j+1 < line.len() { map[i][j+1] } else { Tile::EMPTY };
+                    let image = match above {
+                        Tile::EMPTY => match (left, right, below) {
+                            (Tile::EMPTY, Tile::EMPTY, Tile::EMPTY) => "grass alone",
+                            (_, Tile::EMPTY, Tile::EMPTY) => "grass left",
+                            (Tile::EMPTY, _, Tile::EMPTY) => "grass right",
+                            (_, _, Tile::EMPTY) => "grass left right",
+                            (Tile::EMPTY, Tile::EMPTY, _) => "grass down",
+                            (_, Tile::EMPTY, _) => "grass down left",
+                            (Tile::EMPTY, _, _) => "grass down right",
+                            (_, _, _) => "grass down left right",
+                        }
+                        Tile::GROUND => if (i+j)%2 == 0 { "full0" } else { "full1" },
                     };
                     Some(SPRITES[ground_type][image])
                 }
