@@ -37,12 +37,13 @@ fn spawn_characters(
         )
     };
     let character_size = 24.0;
-    let base_position = Vec3::new(character_size, 0.0, 0.0);
+    let player_layer = 2.0;
+    let npc_layer = 1.0;
 
     commands
         .spawn_bundle(SpriteSheetBundle {
             texture_atlas: spawn("green"),
-            transform: Transform::from_translation(-6.0*base_position),
+            transform: Transform::from_translation(Vec3::new(-6.0*character_size, 0.0, player_layer)),
             ..Default::default()
         })
         .insert(SpriteTimer::from_seconds(0.2))
@@ -50,35 +51,35 @@ fn spawn_characters(
     commands
         .spawn_bundle(SpriteSheetBundle {
             texture_atlas: spawn("blue"),
-            transform: Transform::from_translation(-4.0*base_position),
+            transform: Transform::from_translation(Vec3::new(-4.0*character_size, 0.0, npc_layer)),
             ..Default::default()
         })
         .insert(SpriteTimer::from_seconds(0.2));
     commands
         .spawn_bundle(SpriteSheetBundle {
             texture_atlas: spawn("pink"),
-            transform: Transform::from_translation(-2.0*base_position),
+            transform: Transform::from_translation(Vec3::new(-2.0*character_size, 0.0, npc_layer)),
             ..Default::default()
         })
         .insert(SpriteTimer::from_seconds(0.2));
     commands
         .spawn_bundle(SpriteSheetBundle {
             texture_atlas: spawn("yellow"),
-            transform: Transform::from_translation(0.0*base_position),
+            transform: Transform::from_translation(Vec3::new(0.0*character_size, 0.0, npc_layer)),
             ..Default::default()
         })
         .insert(SpriteTimer::from_seconds(0.2));
     commands
         .spawn_bundle(SpriteSheetBundle {
             texture_atlas: spawn("jeremy"),
-            transform: Transform::from_translation(2.0*base_position),
+            transform: Transform::from_translation(Vec3::new(2.0*character_size, 0.0, npc_layer)),
             ..Default::default()
         })
         .insert(SpriteTimer::from_seconds(0.5));
     commands
         .spawn_bundle(SpriteSheetBundle {
             texture_atlas: spawn("block"),
-            transform: Transform::from_translation(4.0*base_position),
+            transform: Transform::from_translation(Vec3::new(4.0*character_size, 0.0, npc_layer)),
             ..Default::default()
         });
 }
