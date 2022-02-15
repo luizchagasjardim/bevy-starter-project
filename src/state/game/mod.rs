@@ -14,7 +14,7 @@ pub struct Game;
 impl Plugin for Game {
     fn build(&self, app: &mut App) {
         app
-            .add_system_set(SystemSet::on_enter(AppState::Game).with_system(spawn_background))
+            .add_system_set(SystemSet::on_enter(AppState::Game).with_system(spawn_map))
             .add_system_set(SystemSet::on_enter(AppState::Game).with_system(spawn_characters))
             .add_system_set(SystemSet::on_update(AppState::Game).with_system(animation))
             .add_system_set(SystemSet::on_update(AppState::Game).with_system(input))
@@ -23,25 +23,41 @@ impl Plugin for Game {
     }
 }
 
-fn spawn_background(
+fn spawn_map(
     mut commands: Commands,
     sprite_handles: Res<SpriteHandles>,
     asset_server: Res<AssetServer>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
     mut textures: ResMut<Assets<Image>>,
 ) {
-    let tile_size = 24.0;
+    let tile_size = 16.0;
     let background_layer = 0.0;
     let background_type = "blue background";
-    let cloud_height = 3;
-    let texture_atlas_handle = spawn("blue background", &sprite_handles, &mut texture_atlases, &mut textures);
+    let ground_type = "ground";
+    let get_image = |i, j| {
+        //TODO: read tilemap from a file
+        let cloud_height = 3;
+        let ground_height = -1;
+        if j < ground_height {
+            if (i+j)%2 == 0 {
+                (ground_type, "full0")
+            } else {
+                (ground_type, "full1")
+            }
+        } else if j == ground_height {
+            (ground_type, "grass")
+        } else {
+            let image = if j < cloud_height { "full" } else if j == cloud_height { "half" } else { "empty" };
+            (background_type, image)
+        }
+    };
 
     for i in -10..11 {
         for j in -10..11 {
-
-            let image = if j < cloud_height { "full" } else if j == cloud_height { "half" } else { "empty" };
-            let image = SPRITES[background_type][image];
+            let (tileset, tile) = get_image(i, j);
+            let image = SPRITES[tileset][tile];
             let handle = asset_server.get_handle(image);
+            let texture_atlas_handle = spawn(tileset, &sprite_handles, &mut texture_atlases, &mut textures);
             let texture_atlas = texture_atlases.get(texture_atlas_handle.clone()).unwrap();
             let sprite = TextureAtlasSprite {
                 index: texture_atlas.get_texture_index(&handle).unwrap(),
@@ -49,9 +65,9 @@ fn spawn_background(
             };
 
             commands
-                .spawn_bundle(SpriteSheetBundle {
+                .spawn_bundle(SpriteSheetBundle { //maybe use sprite instead of sprite sheet lol
                     sprite,
-                    texture_atlas: texture_atlas_handle.clone(),
+                    texture_atlas: texture_atlas_handle,
                     transform: Transform::from_translation(Vec3::new(i as f32*tile_size, j as f32*tile_size, background_layer)),
                     ..Default::default()
                 });

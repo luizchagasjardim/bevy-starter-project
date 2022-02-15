@@ -102,6 +102,11 @@ pub static ref SPRITES: HashMap<&'static str, HashMap<&'static str, &'static str
         ("idle1", "pixel-platformer/Characters/character_0025.png"),
         ("idle2", "pixel-platformer/Characters/character_0026.png"),
     ])),
+    ("ground", HashMap::from([
+        ("grass", "pixel-platformer/Tiles/tile_0022.png"),
+        ("full0", "pixel-platformer/Tiles/tile_0004.png"),
+        ("full1", "pixel-platformer/Tiles/tile_0005.png"),
+    ])),
     ("heart", HashMap::from([
         ("full", "pixel-platformer/Tiles/tile_0044.png"),
         ("half", "pixel-platformer/Tiles/tile_0045.png"),
