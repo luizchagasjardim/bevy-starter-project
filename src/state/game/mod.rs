@@ -3,6 +3,9 @@ use bevy::prelude::*;
 use crate::state::AppState;
 use crate::sprite::*;
 
+mod map;
+use map::*;
+
 mod player;
 use player::*;
 
@@ -51,29 +54,33 @@ fn spawn_map(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
 ) {
+    let map = read_map();
     let tile_size = 18.0;
+    let start_point = -tile_size * (map.len()/2) as f32;
     let layer = 0.5;
     let ground_type = "ground";
-    let get_image = |i, j| {
-        //TODO: read tilemap from a file
-        let ground_height = -1;
-        if j < ground_height {
-            let image = if (i+j)%2 == 0 { "full0" } else { "full1" };
-            Some(SPRITES[ground_type][image])
-        } else if j == ground_height {
-            Some(SPRITES[ground_type]["grass"])
-        } else {
-            None
-        }
-    };
-
-    for i in -10..11 {
-        for j in -10..11 {
-            if let Some(image) = get_image(i, j) {
+    for (i, line) in map.iter().enumerate() {
+        for (j, tile) in line.iter().enumerate() {
+            let image = match tile {
+                Tile::EMPTY => None,
+                Tile::GROUND => {
+                    let image = if map[i][j+1] == Tile::EMPTY {
+                        "grass"
+                    } else {
+                        if (i+j)%2 == 0 { "full0" } else { "full1" }
+                    };
+                    Some(SPRITES[ground_type][image])
+                }
+            };
+            if let Some(image) = image {
                 commands
                     .spawn_bundle(SpriteBundle {
                         texture: asset_server.get_handle(image),
-                        transform: Transform::from_translation(Vec3::new(i as f32 * tile_size, j as f32 * tile_size, layer)),
+                        transform: Transform::from_translation(Vec3::new(
+                            start_point + i as f32 * tile_size,
+                            start_point + j as f32 * tile_size,
+                            layer,
+                        )),
                         ..Default::default()
                     });
             }
