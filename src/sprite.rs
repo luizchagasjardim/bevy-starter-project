@@ -30,6 +30,7 @@ impl SpriteTimer {
 }
 
 lazy_static!{
+//TODO: maybe use enums instead of strings lol
 pub static ref SPRITES: HashMap<&'static str, HashMap<&'static str, &'static str>> = HashMap::from([
     ("blue background", HashMap::from([
         ("empty", "pixel-platformer/Background/background_0000.png"),
@@ -111,8 +112,18 @@ pub static ref SPRITES: HashMap<&'static str, HashMap<&'static str, &'static str
         ("grass down right", "pixel-platformer/Tiles/tile_0021.png"),
         ("grass down left right", "pixel-platformer/Tiles/tile_0022.png"),
         ("grass down left", "pixel-platformer/Tiles/tile_0023.png"),
-        ("full0", "pixel-platformer/Tiles/tile_0024.png"),
-        ("full1", "pixel-platformer/Tiles/tile_0025.png"),
+        ("full", "pixel-platformer/Tiles/tile_0122.png"),
+        ("above", "pixel-platformer/Tiles/tile_0140.png"),
+        ("above left", "pixel-platformer/Tiles/tile_0143.png"),
+        ("above right", "pixel-platformer/Tiles/tile_0141.png"),
+        ("above below", "pixel-platformer/Tiles/tile_0120.png"),
+        ("left empty", "pixel-platformer/Tiles/tile_0121.png"),
+        ("right empty", "pixel-platformer/Tiles/tile_0123.png"),
+        ("below empty", "pixel-platformer/Tiles/tile_0142.png"),
+        ("below left empty", "pixel-platformer/Tiles/tile_0005.png"),
+        ("below right empty", "pixel-platformer/Tiles/tile_0004.png"),
+        ("above left empty", "pixel-platformer/Tiles/tile_0025.png"),
+        ("above right empty", "pixel-platformer/Tiles/tile_0024.png"),
     ])),
     ("heart", HashMap::from([
         ("full", "pixel-platformer/Tiles/tile_0044.png"),

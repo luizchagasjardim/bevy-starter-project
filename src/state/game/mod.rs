@@ -64,12 +64,18 @@ fn spawn_map(
             let image = match tile {
                 Tile::EMPTY => None,
                 Tile::GROUND => {
+                    //TODO: methods for getting the neighbours
                     let left = if i > 0 { map[i-1][j] } else { Tile::EMPTY };
                     let right = if i+1 < map.len() { map[i+1][j] } else { Tile::EMPTY };
                     let below = if j > 0 { map[i][j-1] } else { Tile::EMPTY };
                     let above = if j+1 < line.len() { map[i][j+1] } else { Tile::EMPTY };
+                    let below_left = if i > 0 && j > 0 { map[i-1][j-1] } else { Tile::EMPTY };
+                    let below_right = if i+1 < line.len() && j > 0 { map[i+1][j-1] } else { Tile::EMPTY };
+                    let above_left = if i > 0 && j+1 < line.len() { map[i-1][j+1] } else { Tile::EMPTY };
+                    let above_right = if i+1 < line.len() && j+1 < line.len() { map[i+1][j+1] } else { Tile::EMPTY };
                     let image = match above {
                         Tile::EMPTY => match (left, right, below) {
+                            //TODO: instead of checking for empty, create a method that return true if the neighbours connect
                             (Tile::EMPTY, Tile::EMPTY, Tile::EMPTY) => "grass alone",
                             (_, Tile::EMPTY, Tile::EMPTY) => "grass left",
                             (Tile::EMPTY, _, Tile::EMPTY) => "grass right",
@@ -79,7 +85,23 @@ fn spawn_map(
                             (Tile::EMPTY, _, _) => "grass down right",
                             (_, _, _) => "grass down left right",
                         }
-                        Tile::GROUND => if (i+j)%2 == 0 { "full0" } else { "full1" },
+                        Tile::GROUND => match (left, right, below) {
+                            (Tile::EMPTY, Tile::EMPTY, Tile::EMPTY) => "above",
+                            (_, Tile::EMPTY, Tile::EMPTY) => "above left",
+                            (Tile::EMPTY, _, Tile::EMPTY) => "above right",
+                            (_, _, Tile::EMPTY) => "below empty",
+                            (Tile::EMPTY, Tile::EMPTY, _) => "above below",
+                            (_, Tile::EMPTY, _) => "right empty",
+                            (Tile::EMPTY, _, _) => "left empty",
+                            (_, _, _) => match (below_left, below_right, above_left, above_right) {
+                                //TODO: missing some cases due to not having the images
+                                (Tile::EMPTY, _, _, _) => "below left empty",
+                                (_, Tile::EMPTY, _, _) => "below right empty",
+                                (_, _, Tile::EMPTY, _) => "above left empty",
+                                (_, _, _, Tile::EMPTY) => "above right empty",
+                                (_, _, _, _) => "full",
+                            }
+                        }
                     };
                     Some(SPRITES[ground_type][image])
                 }
