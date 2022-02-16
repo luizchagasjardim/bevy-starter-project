@@ -1,6 +1,9 @@
+#![feature(derive_default_enum)]
+
 use bevy::prelude::*;
 
 mod sprite;
+
 use sprite::SpriteHandles;
 
 mod state;

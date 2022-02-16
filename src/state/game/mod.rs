@@ -218,9 +218,9 @@ fn animation(
 
 fn input(
     input: Res<Input<KeyCode>>,
-    mut query: Query<(&Controls, &mut Velocity)>,
+    mut query: Query<(&mut PlayerCharacter, &Controls, &mut Velocity)>,
 ) {
-    for (controls, mut velocity) in query.iter_mut() {
+    for (mut player, controls, mut velocity) in query.iter_mut() {
         let mut direction = 0;
         if input.pressed(controls.left) {
             direction -= 1;
@@ -229,8 +229,11 @@ fn input(
             direction += 1;
         }
         velocity.update(direction);
-        if input.pressed(controls.jump) {
-            velocity.0.y = 150.0;
+        let tried_to_jump = input.pressed(controls.jump);
+        let state = player.update_state_by_input(direction != 0, tried_to_jump);
+        if state == PlayerState::JUMP {
+            velocity.0.y = 500.0;
+            player.jump();
         }
     }
 }
@@ -270,27 +273,30 @@ fn camera_movement(
 
 fn player_ground_collision(
     ground_query: Query<(&GroundHitbox, &Transform), Without<PlayerGroundHitbox>>,
-    mut player_query: Query<(&PlayerGroundHitbox, &mut Transform, &mut Velocity), Without<GroundHitbox>>,
+    mut player_query: Query<(&mut PlayerCharacter, &PlayerGroundHitbox, &mut Transform, &mut Velocity), Without<GroundHitbox>>,
 ) {
-    for (player_hitbox, mut player_transform, mut player_velocity) in player_query.iter_mut() {
+    for (mut player, player_hitbox, mut player_transform, mut player_velocity) in player_query.iter_mut() {
         for (ground_hitbox, ground_transform) in ground_query.iter() {
             if let Some(collision) = player_hitbox.0.collide(&player_transform.translation, &ground_hitbox.0, &ground_transform.translation) {
                 match collision.collision_type {
                     CollisionType::Bottom => {
                         player_transform.translation.y += collision.overlap;
                         player_velocity.stop_bottom();
+                        player.hit_ground();
                     },
                     CollisionType::Top => {
                         player_transform.translation.y -= collision.overlap;
-                        player_velocity.stop_top()
+                        player_velocity.stop_top();
                     },
                     CollisionType::Left => {
                         player_transform.translation.x += collision.overlap;
-                        player_velocity.stop_left()
+                        player_velocity.stop_left();
+                        player.hit_wall();
                     },
                     CollisionType::Right => {
                         player_transform.translation.x -= collision.overlap;
-                        player_velocity.stop_right()
+                        player_velocity.stop_right();
+                        player.hit_wall();
                     },
                 };
             }
