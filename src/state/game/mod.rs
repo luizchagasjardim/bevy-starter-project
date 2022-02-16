@@ -3,6 +3,9 @@ use bevy::prelude::*;
 use crate::state::AppState;
 use crate::sprite::*;
 
+mod hitbox;
+use hitbox::*;
+
 mod map;
 use map::*;
 
@@ -22,6 +25,7 @@ impl Plugin for Game {
             .add_system_set(SystemSet::on_enter(AppState::Game).with_system(spawn_characters))
             .add_system_set(SystemSet::on_update(AppState::Game).with_system(animation))
             .add_system_set(SystemSet::on_update(AppState::Game).with_system(input))
+            .add_system_set(SystemSet::on_update(AppState::Game).with_system(player_ground_collision))
             .add_system_set(SystemSet::on_update(AppState::Game).with_system(movement))
             .add_system_set(SystemSet::on_update(AppState::Game).with_system(camera_movement));
     }
@@ -116,7 +120,11 @@ fn spawn_map(
                             layer,
                         )),
                         ..Default::default()
-                    });
+                    })
+                    .insert(GroundHitbox(Hitbox {
+                        relative_position: Vec3::default(),
+                        size: Vec2::new(tile_size, tile_size),
+                    }));
             }
         }
     }
@@ -147,7 +155,17 @@ fn spawn_characters(
             ..Default::default()
         })
         .insert(SpriteTimer::from_seconds(0.2))
-        .insert_bundle(PlayerBundle::default());
+        .insert_bundle(PlayerBundle {
+            ground_hitbox: PlayerGroundHitbox(Hitbox {
+                relative_position: Vec3::default(),
+                size: Vec2::new(character_size, character_size), //TODO: better values
+            }),
+            enemy_hitbox: PlayerEnemyHitbox(Hitbox {
+                relative_position: Vec3::default(),
+                size: Vec2::new(character_size, character_size), //TODO: better values
+            }),
+            ..Default::default()
+        });
     commands
         .spawn_bundle(SpriteSheetBundle {
             texture_atlas: spawn("blue"),
@@ -211,14 +229,18 @@ fn input(
             direction += 1;
         }
         velocity.update(direction);
+        if input.pressed(controls.jump) {
+            velocity.0.y = 150.0;
+        }
     }
 }
 
 fn movement(
     time: Res<Time>,
-    mut query: Query<(&Velocity, &mut Transform)>,
+    mut query: Query<(&mut Velocity, &mut Transform)>,
 ) {
-    for (velocity, mut transform) in query.iter_mut() {
+    for (mut velocity, mut transform) in query.iter_mut() {
+        velocity.apply_gravity(time.delta_seconds());
         transform.translation += velocity.0 * time.delta_seconds();
     }
 }
@@ -243,5 +265,35 @@ fn camera_movement(
         camera_position.translation.x = player_position + horizontal_limit;
     } else if player_position > right_limit {
         camera_position.translation.x = player_position - horizontal_limit;
+    }
+}
+
+fn player_ground_collision(
+    ground_query: Query<(&GroundHitbox, &Transform), Without<PlayerGroundHitbox>>,
+    mut player_query: Query<(&PlayerGroundHitbox, &mut Transform, &mut Velocity), Without<GroundHitbox>>,
+) {
+    for (player_hitbox, mut player_transform, mut player_velocity) in player_query.iter_mut() {
+        for (ground_hitbox, ground_transform) in ground_query.iter() {
+            if let Some(collision) = player_hitbox.0.collide(&player_transform.translation, &ground_hitbox.0, &ground_transform.translation) {
+                match collision.collision_type {
+                    CollisionType::Bottom => {
+                        player_transform.translation.y += collision.overlap;
+                        player_velocity.stop_bottom();
+                    },
+                    CollisionType::Top => {
+                        player_transform.translation.y -= collision.overlap;
+                        player_velocity.stop_top()
+                    },
+                    CollisionType::Left => {
+                        player_transform.translation.x += collision.overlap;
+                        player_velocity.stop_left()
+                    },
+                    CollisionType::Right => {
+                        player_transform.translation.x -= collision.overlap;
+                        player_velocity.stop_right()
+                    },
+                };
+            }
+        }
     }
 }

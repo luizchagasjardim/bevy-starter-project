@@ -605,6 +605,7 @@ dependencies = [
  "bevy",
  "console_error_panic_hook",
  "lazy_static",
+ "wasm-bindgen",
 ]
 
 [[package]]
