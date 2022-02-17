@@ -228,12 +228,13 @@ fn input(
         if input.pressed(controls.right) {
             direction += 1;
         }
+        player.update_by_walk_input(direction != 0);
         velocity.update(direction);
-        let tried_to_jump = input.pressed(controls.jump);
-        let state = player.update_state_by_input(direction != 0, tried_to_jump);
-        if state == PlayerState::JUMP {
-            velocity.0.y = 500.0;
-            player.jump();
+
+        if input.just_pressed(controls.jump) {
+            if let Ok(_) = player.try_jump() {
+                velocity.0.y = 500.0;
+            }
         }
     }
 }
