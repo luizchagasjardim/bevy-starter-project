@@ -66,59 +66,9 @@ fn spawn_map(
     let tile_size = 18.0;
     let start_point = -tile_size * Vec2::new(20.0, (map[0].len()/2) as f32);
     let layer = 0.5;
-    let ground_type = "ground";
-    for (i, line) in map.iter().enumerate() {
-        for (j, tile) in line.iter().enumerate() {
-            let image = match tile {
-                Tile::Empty => None,
-                Tile::Ground => {
-                    //TODO: methods for getting the neighbours
-                    let left = if i > 0 { map[i-1][j] } else { Tile::Empty };
-                    let left = tile.connects_to(left);
-                    let right = if i+1 < map.len() { map[i+1][j] } else { Tile::Empty };
-                    let right = tile.connects_to(right);
-                    let below = if j > 0 { map[i][j-1] } else { Tile::Empty };
-                    let below = tile.connects_to(below);
-                    let above = if j+1 < line.len() { map[i][j+1] } else { Tile::Empty };
-                    let above = tile.connects_to(above);
-                    let below_left = if i > 0 && j > 0 { map[i-1][j-1] } else { Tile::Empty };
-                    let below_left = tile.connects_to(below_left);
-                    let below_right = if i+1 < map.len() && j > 0 { map[i+1][j-1] } else { Tile::Empty };
-                    let below_right = tile.connects_to(below_right);
-                    let above_left = if i > 0 && j+1 < line.len() { map[i-1][j+1] } else { Tile::Empty };
-                    let above_left = tile.connects_to(above_left);
-                    let above_right = if i+1 < map.len() && j+1 < line.len() { map[i+1][j+1] } else { Tile::Empty };
-                    let above_right = tile.connects_to(above_right);
-                    let image = match (above, left, right, below) {
-                        (false, false, false, false) => "grass alone",
-                        (false, true, false, false) => "grass left",
-                        (false, false, true, false) => "grass right",
-                        (false, true, true, false) => "grass left right",
-                        (false, false, false, true) => "grass down",
-                        (false, true, false, true) => "grass down left",
-                        (false, false, true, true) => "grass down right",
-                        (false, true, true, true) => "grass down left right",
-                        (true, false, false, false) => "above",
-                        (true, true, false, false) => "above left",
-                        (true, false, true, false) => "above right",
-                        (true, true, true, false) => "below empty",
-                        (true, false, false, true) => "above below",
-                        (true, true, false, true) => "right empty",
-                        (true, false, true, true) => "left empty",
-                        (true, true, true, true) => match (below_left, below_right, above_left, above_right) {
-                            //TODO: missing some cases due to not having the images
-                            (false, _, _, _) => "below left empty",
-                            (_, false, _, _) => "below right empty",
-                            (_, _, false, _) => "above left empty",
-                            (_, _, _, false) => "above right empty",
-                            (_, _, _, _) => "full",
-                        }
-                    };
-                    let collision = image != "full";
-                    Some((SPRITES[ground_type][image], collision))
-                }
-            };
-            if let Some((image, collision)) = image {
+    for i in 0..Map::WIDTH {
+        for j in 0..Map::HEIGHT {
+            if let Some((image, collision)) = map.get_image(i, j) {
                 let mut entity = commands
                     .spawn_bundle(SpriteBundle {
                         texture: asset_server.get_handle(image),
