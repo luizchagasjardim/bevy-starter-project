@@ -71,7 +71,10 @@ fn spawn_map(
                     ..Default::default()
                 });
             if let Some(hitbox) = tile_info.hitbox {
-                entity.insert(GroundHitbox(hitbox));
+                match tile_info.tile_type {
+                    Tile::Empty => panic!("Not possible to have a hitbox on an empty tile"),
+                    Tile::Ground => { entity.insert(GroundHitbox(hitbox)); },
+                }
             }
         }
     }
@@ -91,7 +94,7 @@ fn spawn_characters(
             &mut textures,
         )
     };
-    let character_size = 24.0;
+    let character_size = 18.0;
     let player_layer = 2.0;
     let npc_layer = 1.0;
 
