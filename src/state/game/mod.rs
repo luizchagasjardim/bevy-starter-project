@@ -70,45 +70,48 @@ fn spawn_map(
     for (i, line) in map.iter().enumerate() {
         for (j, tile) in line.iter().enumerate() {
             let image = match tile {
-                Tile::EMPTY => None,
-                Tile::GROUND => {
+                Tile::Empty => None,
+                Tile::Ground => {
                     //TODO: methods for getting the neighbours
-                    let left = if i > 0 { map[i-1][j] } else { Tile::EMPTY };
-                    let right = if i+1 < map.len() { map[i+1][j] } else { Tile::EMPTY };
-                    let below = if j > 0 { map[i][j-1] } else { Tile::EMPTY };
-                    let above = if j+1 < line.len() { map[i][j+1] } else { Tile::EMPTY };
-                    let below_left = if i > 0 && j > 0 { map[i-1][j-1] } else { Tile::EMPTY };
-                    let below_right = if i+1 < map.len() && j > 0 { map[i+1][j-1] } else { Tile::EMPTY };
-                    let above_left = if i > 0 && j+1 < line.len() { map[i-1][j+1] } else { Tile::EMPTY };
-                    let above_right = if i+1 < map.len() && j+1 < line.len() { map[i+1][j+1] } else { Tile::EMPTY };
-                    let image = match above {
-                        Tile::EMPTY => match (left, right, below) {
-                            //TODO: instead of checking for empty, create a method that return true if the neighbours connect
-                            (Tile::EMPTY, Tile::EMPTY, Tile::EMPTY) => "grass alone",
-                            (_, Tile::EMPTY, Tile::EMPTY) => "grass left",
-                            (Tile::EMPTY, _, Tile::EMPTY) => "grass right",
-                            (_, _, Tile::EMPTY) => "grass left right",
-                            (Tile::EMPTY, Tile::EMPTY, _) => "grass down",
-                            (_, Tile::EMPTY, _) => "grass down left",
-                            (Tile::EMPTY, _, _) => "grass down right",
-                            (_, _, _) => "grass down left right",
-                        }
-                        Tile::GROUND => match (left, right, below) {
-                            (Tile::EMPTY, Tile::EMPTY, Tile::EMPTY) => "above",
-                            (_, Tile::EMPTY, Tile::EMPTY) => "above left",
-                            (Tile::EMPTY, _, Tile::EMPTY) => "above right",
-                            (_, _, Tile::EMPTY) => "below empty",
-                            (Tile::EMPTY, Tile::EMPTY, _) => "above below",
-                            (_, Tile::EMPTY, _) => "right empty",
-                            (Tile::EMPTY, _, _) => "left empty",
-                            (_, _, _) => match (below_left, below_right, above_left, above_right) {
-                                //TODO: missing some cases due to not having the images
-                                (Tile::EMPTY, _, _, _) => "below left empty",
-                                (_, Tile::EMPTY, _, _) => "below right empty",
-                                (_, _, Tile::EMPTY, _) => "above left empty",
-                                (_, _, _, Tile::EMPTY) => "above right empty",
-                                (_, _, _, _) => "full",
-                            }
+                    let left = if i > 0 { map[i-1][j] } else { Tile::Empty };
+                    let left = tile.connects_to(left);
+                    let right = if i+1 < map.len() { map[i+1][j] } else { Tile::Empty };
+                    let right = tile.connects_to(right);
+                    let below = if j > 0 { map[i][j-1] } else { Tile::Empty };
+                    let below = tile.connects_to(below);
+                    let above = if j+1 < line.len() { map[i][j+1] } else { Tile::Empty };
+                    let above = tile.connects_to(above);
+                    let below_left = if i > 0 && j > 0 { map[i-1][j-1] } else { Tile::Empty };
+                    let below_left = tile.connects_to(below_left);
+                    let below_right = if i+1 < map.len() && j > 0 { map[i+1][j-1] } else { Tile::Empty };
+                    let below_right = tile.connects_to(below_right);
+                    let above_left = if i > 0 && j+1 < line.len() { map[i-1][j+1] } else { Tile::Empty };
+                    let above_left = tile.connects_to(above_left);
+                    let above_right = if i+1 < map.len() && j+1 < line.len() { map[i+1][j+1] } else { Tile::Empty };
+                    let above_right = tile.connects_to(above_right);
+                    let image = match (above, left, right, below) {
+                        (false, false, false, false) => "grass alone",
+                        (false, true, false, false) => "grass left",
+                        (false, false, true, false) => "grass right",
+                        (false, true, true, false) => "grass left right",
+                        (false, false, false, true) => "grass down",
+                        (false, true, false, true) => "grass down left",
+                        (false, false, true, true) => "grass down right",
+                        (false, true, true, true) => "grass down left right",
+                        (true, false, false, false) => "above",
+                        (true, true, false, false) => "above left",
+                        (true, false, true, false) => "above right",
+                        (true, true, true, false) => "below empty",
+                        (true, false, false, true) => "above below",
+                        (true, true, false, true) => "right empty",
+                        (true, false, true, true) => "left empty",
+                        (true, true, true, true) => match (below_left, below_right, above_left, above_right) {
+                            //TODO: missing some cases due to not having the images
+                            (false, _, _, _) => "below left empty",
+                            (_, false, _, _) => "below right empty",
+                            (_, _, false, _) => "above left empty",
+                            (_, _, _, false) => "above right empty",
+                            (_, _, _, _) => "full",
                         }
                     };
                     let collision = image != "full";
