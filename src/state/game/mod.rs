@@ -228,8 +228,8 @@ fn input(
         if input.pressed(controls.right) {
             direction += 1;
         }
-        player.update_by_walk_input(direction != 0);
         velocity.update(direction);
+        player.update_walk_state(velocity.0.x);
 
         if input.just_pressed(controls.jump) {
             if let Ok(_) = player.try_jump() {
@@ -282,8 +282,10 @@ fn player_ground_collision(
                 match collision.collision_type {
                     CollisionType::Bottom => {
                         player_transform.translation.y += collision.overlap;
-                        player_velocity.stop_bottom();
-                        player.hit_ground();
+                        if player_velocity.0.y < 0.0 {
+                            player_velocity.0.y = 0.0;
+                            player.hit_ground();
+                        }
                     },
                     CollisionType::Top => {
                         player_transform.translation.y -= collision.overlap;

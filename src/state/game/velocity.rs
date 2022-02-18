@@ -44,11 +44,6 @@ impl Velocity {
             self.0.y = 0.0;
         }
     }
-    pub fn stop_bottom(&mut   self) {
-        if self.0.y < 0.0 {
-            self.0.y = 0.0;
-        }
-    }
 }
 
 fn limit(value: &mut f32, limit: f32) {

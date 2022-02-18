@@ -11,7 +11,7 @@ pub struct PlayerBundle {
     pub velocity: Velocity,
 }
 
-#[derive(Clone, Copy, Default, PartialEq)]
+#[derive(Clone, Copy, Debug, Default, PartialEq)]
 enum PlayerState {
     #[default]
     Idle,
@@ -26,21 +26,29 @@ pub struct PlayerCharacter {
 
 impl PlayerCharacter {
     const MAX_JUMP_COUNT: u8 = 2;
-    pub fn get_jump_count(&self) -> u8 {
+    fn get_jump_count(&self) -> u8 {
         if let PlayerState::InTheAir(jump_count) = self.state {
             jump_count
         } else {
             0
         }
     }
-    pub fn update_by_walk_input(&mut self, walking: bool) {}
+    pub fn update_walk_state(&mut self, x_velocity: f32) {
+        if let PlayerState::InTheAir(_) = self.state {
+            return;
+        }
+        self.state = if x_velocity != 0.0 {
+                PlayerState::Walking
+            } else {
+                PlayerState::Idle
+            };
+    }
     pub fn try_jump(&mut self) -> Result<(), ()> {
         let jump_count = self.get_jump_count();
         if jump_count < Self::MAX_JUMP_COUNT {
             self.state = PlayerState::InTheAir(jump_count+1);
             Ok(())
         } else {
-            crate::log::log("Reached jump limit!"); //TODO: if this function does not have a log somewhere, the code behaves as if MAX_JUMP_COUNT is one more. Good luck.
             Err(())
         }
     }
