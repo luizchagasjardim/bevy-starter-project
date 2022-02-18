@@ -1,3 +1,5 @@
+use bevy::prelude::Vec3;
+
 #[derive(Clone, Copy, PartialEq)]
 pub enum Tile {
     Empty,
@@ -5,12 +7,19 @@ pub enum Tile {
 }
 
 impl Tile {
+    pub const SIZE: f32 = 18.0;
     pub fn connects_to(self, other: Tile) -> bool {
         match (self, other) {
             (Tile::Ground, Tile::Ground) => true,
             (_, _) => false,
         }
     }
+}
+
+pub struct TileInfo {
+    pub position: Vec3,
+    pub image: &'static str,
+    pub collision: bool,
 }
 
 type Line = [Tile; Map::HEIGHT];
@@ -20,34 +29,36 @@ pub struct Map {
 }
 
 impl Map {
-    pub const WIDTH: usize = 100;
-    pub const HEIGHT: usize = 20;
-    pub fn left(&self, i: usize, j: usize) -> Tile {
+    const WIDTH: usize = 100;
+    const HEIGHT: usize = 20;
+    fn left(&self, i: usize, j: usize) -> Tile {
         if i > 0 { self.values[i-1][j] } else { Tile::Empty }
     }
-    pub fn right(&self, i: usize, j: usize) -> Tile {
+    fn right(&self, i: usize, j: usize) -> Tile {
         if i+1 < Self::WIDTH { self.values[i+1][j] } else { Tile::Empty }
     }
-    pub fn below(&self, i: usize, j: usize) -> Tile {
+    fn below(&self, i: usize, j: usize) -> Tile {
         if j > 0 { self.values[i][j-1] } else { Tile::Empty }
     }
-    pub fn above(&self, i: usize, j: usize) -> Tile {
+    fn above(&self, i: usize, j: usize) -> Tile {
         if j+1 < Self::HEIGHT { self.values[i][j+1] } else { Tile::Empty }
     }
-    pub fn below_left(&self, i: usize, j: usize) -> Tile {
+    fn below_left(&self, i: usize, j: usize) -> Tile {
         if i > 0 && j > 0 { self.values[i-1][j-1] } else { Tile::Empty }
     }
-    pub fn below_right(&self, i: usize, j: usize) -> Tile {
+    fn below_right(&self, i: usize, j: usize) -> Tile {
         if i+1 < Self::WIDTH && j > 0 { self.values[i+1][j-1] } else { Tile::Empty }
     }
-    pub fn above_left(&self, i: usize, j: usize) -> Tile {
+    fn above_left(&self, i: usize, j: usize) -> Tile {
         if i > 0 && j+1 < Self::HEIGHT { self.values[i-1][j+1] } else { Tile::Empty }
     }
-    pub fn above_right(&self, i: usize, j: usize) -> Tile {
+    fn above_right(&self, i: usize, j: usize) -> Tile {
         if i+1 < Self::WIDTH && j+1 < Self::HEIGHT { self.values[i+1][j+1] } else { Tile::Empty }
     }
-    pub fn get_image(&self, i: usize, j: usize) -> Option<(&str, bool)> {
+    pub fn get_tile_info(&self, i: usize, j: usize) -> Option<TileInfo> {
         use crate::sprite::SPRITES;
+
+        let start_point = Vec3::new(-Tile::SIZE * 20.0,-Tile::SIZE * (Self::HEIGHT/2) as f32, 0.5);
 
         let ground_type = "ground";
         let tile = self[i][j];
@@ -87,10 +98,20 @@ impl Map {
                         (_, _, _, _) => "full",
                     }
                 };
-                let collision = image != "full";
-                Some((SPRITES[ground_type][image], collision))
+                let position = start_point + Tile::SIZE * Vec3::new(i as f32, j as f32, 0.0);
+                Some(TileInfo {
+                    position,
+                    image: SPRITES[ground_type][image],
+                    collision: image != "full",
+                })
             }
         }
+    }
+    pub fn tile_info_iter(&self) -> impl Iterator<Item = Option<TileInfo>> + '_ {
+        self.iter().map(|(i, j)| self.get_tile_info(i, j))
+    }
+    pub fn iter(&self) -> impl Iterator<Item = (usize, usize)> + '_ {
+        (0..Map::WIDTH).flat_map(|i| (0..Map::HEIGHT).map(move |j| (i, j)))
     }
 }
 

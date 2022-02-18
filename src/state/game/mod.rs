@@ -62,29 +62,19 @@ fn spawn_map(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
 ) {
-    let map = read_map();
-    let tile_size = 18.0;
-    let start_point = -tile_size * Vec2::new(20.0, (map[0].len()/2) as f32);
-    let layer = 0.5;
-    for i in 0..Map::WIDTH {
-        for j in 0..Map::HEIGHT {
-            if let Some((image, collision)) = map.get_image(i, j) {
-                let mut entity = commands
-                    .spawn_bundle(SpriteBundle {
-                        texture: asset_server.get_handle(image),
-                        transform: Transform::from_translation(Vec3::new(
-                            start_point.x + i as f32 * tile_size,
-                            start_point.y + j as f32 * tile_size,
-                            layer,
-                        )),
-                        ..Default::default()
-                    });
-                if collision {
-                    entity.insert(GroundHitbox(Hitbox {
-                        relative_position: Vec3::default(),
-                        size: Vec2::new(tile_size, tile_size),
-                    }));
-                }
+    for tile_info in read_map().tile_info_iter() {
+        if let Some(tile_info) = tile_info {
+            let mut entity = commands
+                .spawn_bundle(SpriteBundle {
+                    texture: asset_server.get_handle(tile_info.image),
+                    transform: Transform::from_translation(tile_info.position),
+                    ..Default::default()
+                });
+            if tile_info.collision {
+                entity.insert(GroundHitbox(Hitbox {
+                    relative_position: Vec3::default(),
+                    size: Vec2::new(Tile::SIZE, Tile::SIZE),
+                }));
             }
         }
     }
