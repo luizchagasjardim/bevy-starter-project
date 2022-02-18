@@ -64,7 +64,7 @@ fn spawn_map(
 ) {
     let map = read_map();
     let tile_size = 18.0;
-    let start_point = -tile_size * (map.len()/2) as f32;
+    let start_point = -tile_size * Vec2::new(20.0, (map[0].len()/2) as f32);
     let layer = 0.5;
     let ground_type = "ground";
     for (i, line) in map.iter().enumerate() {
@@ -78,9 +78,9 @@ fn spawn_map(
                     let below = if j > 0 { map[i][j-1] } else { Tile::EMPTY };
                     let above = if j+1 < line.len() { map[i][j+1] } else { Tile::EMPTY };
                     let below_left = if i > 0 && j > 0 { map[i-1][j-1] } else { Tile::EMPTY };
-                    let below_right = if i+1 < line.len() && j > 0 { map[i+1][j-1] } else { Tile::EMPTY };
+                    let below_right = if i+1 < map.len() && j > 0 { map[i+1][j-1] } else { Tile::EMPTY };
                     let above_left = if i > 0 && j+1 < line.len() { map[i-1][j+1] } else { Tile::EMPTY };
-                    let above_right = if i+1 < line.len() && j+1 < line.len() { map[i+1][j+1] } else { Tile::EMPTY };
+                    let above_right = if i+1 < map.len() && j+1 < line.len() { map[i+1][j+1] } else { Tile::EMPTY };
                     let image = match above {
                         Tile::EMPTY => match (left, right, below) {
                             //TODO: instead of checking for empty, create a method that return true if the neighbours connect
@@ -111,24 +111,27 @@ fn spawn_map(
                             }
                         }
                     };
-                    Some(SPRITES[ground_type][image])
+                    let collision = image != "full";
+                    Some((SPRITES[ground_type][image], collision))
                 }
             };
-            if let Some(image) = image {
-                commands
+            if let Some((image, collision)) = image {
+                let mut entity = commands
                     .spawn_bundle(SpriteBundle {
                         texture: asset_server.get_handle(image),
                         transform: Transform::from_translation(Vec3::new(
-                            start_point + i as f32 * tile_size,
-                            start_point + j as f32 * tile_size,
+                            start_point.x + i as f32 * tile_size,
+                            start_point.y + j as f32 * tile_size,
                             layer,
                         )),
                         ..Default::default()
-                    })
-                    .insert(GroundHitbox(Hitbox {
+                    });
+                if collision {
+                    entity.insert(GroundHitbox(Hitbox {
                         relative_position: Vec3::default(),
                         size: Vec2::new(tile_size, tile_size),
                     }));
+                }
             }
         }
     }
