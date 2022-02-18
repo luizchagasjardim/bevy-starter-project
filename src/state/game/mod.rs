@@ -3,6 +3,8 @@ use bevy::prelude::*;
 use crate::state::AppState;
 use crate::sprite::*;
 
+mod direction;
+
 mod hitbox;
 use hitbox::*;
 
@@ -24,6 +26,8 @@ impl Plugin for Game {
             .add_system_set(SystemSet::on_enter(AppState::Game).with_system(spawn_map))
             .add_system_set(SystemSet::on_enter(AppState::Game).with_system(spawn_characters))
             .add_system_set(SystemSet::on_update(AppState::Game).with_system(animation))
+            .add_system_set(SystemSet::on_update(AppState::Game).with_system(update_direction))
+            .add_system_set(SystemSet::on_update(AppState::Game).with_system(player_spritesheet))
             .add_system_set(SystemSet::on_update(AppState::Game).with_system(input))
             .add_system_set(SystemSet::on_update(AppState::Game).with_system(player_ground_collision))
             .add_system_set(SystemSet::on_update(AppState::Game).with_system(movement))
@@ -150,7 +154,7 @@ fn spawn_characters(
 
     commands
         .spawn_bundle(SpriteSheetBundle {
-            texture_atlas: spawn("green"),
+            texture_atlas: spawn("green idle"),
             transform: Transform::from_translation(Vec3::new(-6.0*character_size, 0.0, player_layer)),
             ..Default::default()
         })
@@ -216,19 +220,36 @@ fn animation(
     }
 }
 
+fn update_direction(mut query: Query<(&mut TextureAtlasSprite, &direction::Direction)>) {
+    for (mut sprite, direction) in query.iter_mut() {
+        sprite.flip_x = *direction == direction::Direction::Right;
+    }
+}
+
+fn player_spritesheet(
+    sprite_handles: Res<SpriteHandles>,
+    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
+    mut textures: ResMut<Assets<Image>>,
+    mut query: Query<(&mut PlayerCharacter, &mut TextureAtlasSprite, &mut Handle<TextureAtlas>)>,
+) {
+    for (mut player, mut sprite, mut texture_atlas_handle) in query.iter_mut() {
+        if let Some(sheet) = player.update_spritesheet() {
+            *texture_atlas_handle = spawn(sheet, &sprite_handles, &mut texture_atlases, &mut textures);
+            *sprite = TextureAtlasSprite::default();
+        }
+    }
+}
+
 fn input(
     input: Res<Input<KeyCode>>,
-    mut query: Query<(&mut PlayerCharacter, &Controls, &mut Velocity)>,
+    mut query: Query<(&mut PlayerCharacter, &Controls, &mut Velocity, &mut direction::Direction)>,
 ) {
-    for (mut player, controls, mut velocity) in query.iter_mut() {
-        let mut direction = 0;
-        if input.pressed(controls.left) {
-            direction -= 1;
+    for (mut player, controls, mut velocity, mut direction) in query.iter_mut() {
+        let new_direction = direction::Direction::from_input(input.pressed(controls.left), input.pressed(controls.right));
+        velocity.update(new_direction);
+        if let Some(new_direction) = new_direction {
+            *direction = new_direction;
         }
-        if input.pressed(controls.right) {
-            direction += 1;
-        }
-        velocity.update(direction);
         player.update_walk_state(velocity.0.x);
 
         if input.just_pressed(controls.jump) {
@@ -294,12 +315,10 @@ fn player_ground_collision(
                     CollisionType::Left => {
                         player_transform.translation.x += collision.overlap;
                         player_velocity.stop_left();
-                        player.hit_wall();
                     },
                     CollisionType::Right => {
                         player_transform.translation.x -= collision.overlap;
                         player_velocity.stop_right();
-                        player.hit_wall();
                     },
                 };
             }

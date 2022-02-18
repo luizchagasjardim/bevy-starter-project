@@ -52,8 +52,14 @@ pub static ref SPRITES: HashMap<&'static str, HashMap<&'static str, &'static str
         ("half", "pixel-platformer/Background/background_0010.png"),
         ("full", "pixel-platformer/Background/background_0011.png"),
     ])),
-    ("green", HashMap::from([
+    ("green idle", HashMap::from([
         ("closed", "pixel-platformer/Characters/character_0000.png"),
+    ])),
+    ("green walk", HashMap::from([
+        ("closed", "pixel-platformer/Characters/character_0000.png"),
+        ("open", "pixel-platformer/Characters/character_0001.png"),
+    ])),
+    ("green jump", HashMap::from([
         ("open", "pixel-platformer/Characters/character_0001.png"),
     ])),
     ("blue", HashMap::from([
