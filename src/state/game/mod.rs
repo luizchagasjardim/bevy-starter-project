@@ -70,11 +70,8 @@ fn spawn_map(
                     transform: Transform::from_translation(tile_info.position),
                     ..Default::default()
                 });
-            if tile_info.collision {
-                entity.insert(GroundHitbox(Hitbox {
-                    relative_position: Vec3::default(),
-                    size: Vec2::new(Tile::SIZE, Tile::SIZE),
-                }));
+            if let Some(hitbox) = tile_info.hitbox {
+                entity.insert(GroundHitbox(hitbox));
             }
         }
     }

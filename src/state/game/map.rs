@@ -1,4 +1,6 @@
-use bevy::prelude::Vec3;
+use bevy::prelude::{Vec2, Vec3};
+
+use super::hitbox::Hitbox;
 
 #[derive(Clone, Copy, PartialEq)]
 pub enum Tile {
@@ -19,7 +21,7 @@ impl Tile {
 pub struct TileInfo {
     pub position: Vec3,
     pub image: &'static str,
-    pub collision: bool,
+    pub hitbox: Option<Hitbox>,
 }
 
 type Line = [Tile; Map::HEIGHT];
@@ -99,10 +101,18 @@ impl Map {
                     }
                 };
                 let position = start_point + Tile::SIZE * Vec3::new(i as f32, j as f32, 0.0);
+                let hitbox = if image == "full" {
+                    None
+                } else {
+                    Some(Hitbox {
+                        relative_position: Vec3::default(),
+                        size: Vec2::new(Tile::SIZE, Tile::SIZE),
+                    })
+                };
                 Some(TileInfo {
                     position,
                     image: SPRITES[ground_type][image],
-                    collision: image != "full",
+                    hitbox,
                 })
             }
         }
