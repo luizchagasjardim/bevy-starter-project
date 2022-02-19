@@ -2,6 +2,8 @@ use bevy::prelude::{Vec2, Vec3};
 
 use super::hitbox::Hitbox;
 
+use crate::sprite::SpriteVariant;
+
 #[derive(Clone, Copy, PartialEq)]
 pub enum Tile {
     Empty,
@@ -21,7 +23,7 @@ impl Tile {
 pub struct TileInfo {
     pub tile_type: Tile,
     pub position: Vec3,
-    pub image: &'static str,
+    pub image: SpriteVariant,
     pub hitbox: Option<Hitbox>,
 }
 
@@ -113,7 +115,7 @@ impl Map {
                 Some(TileInfo {
                     tile_type: tile,
                     position,
-                    image: SPRITES[ground_type][image],
+                    image: SpriteVariant::Sprite(SPRITES[ground_type][image]),
                     hitbox,
                 })
             }

@@ -64,12 +64,14 @@ fn spawn_map(
 ) {
     for tile_info in read_map().tile_info_iter() {
         if let Some(tile_info) = tile_info {
-            let mut entity = commands
-                .spawn_bundle(SpriteBundle {
-                    texture: asset_server.get_handle(tile_info.image),
+            let mut entity = match tile_info.image {
+                SpriteVariant::Sprite(path) => commands.spawn_bundle(SpriteBundle {
+                    texture: asset_server.get_handle(path),
                     transform: Transform::from_translation(tile_info.position),
                     ..Default::default()
-                });
+                }),
+                SpriteVariant::SpriteSheet(_) => todo!(),
+            };
             if let Some(hitbox) = tile_info.hitbox {
                 match tile_info.tile_type {
                     Tile::Empty => panic!("Not possible to have a hitbox on an empty tile"),
