@@ -23,8 +23,7 @@ impl Plugin for Game {
     fn build(&self, app: &mut App) {
         app
             .add_system_set(SystemSet::on_enter(AppState::Game).with_system(spawn_background))
-            .add_system_set(SystemSet::on_enter(AppState::Game).with_system(spawn_map))
-            .add_system_set(SystemSet::on_enter(AppState::Game).with_system(spawn_characters))
+            .add_system_set(SystemSet::on_enter(AppState::Game).with_system(load_level))
             .add_system_set(SystemSet::on_update(AppState::Game).with_system(animation))
             .add_system_set(SystemSet::on_update(AppState::Game).with_system(update_direction))
             .add_system_set(SystemSet::on_update(AppState::Game).with_system(player_spritesheet))
@@ -58,47 +57,9 @@ fn spawn_background(
     }
 }
 
-fn spawn_map(
+fn load_level(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
-    sprite_handles: Res<SpriteHandles>,
-    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
-    mut textures: ResMut<Assets<Image>>,
-) {
-    for tile_info in read_map().tile_info_iter() {
-        if let Some(tile_info) = tile_info {
-            let mut entity = match tile_info.image {
-                SpriteVariant::Sprite(path) => commands.spawn_bundle(SpriteBundle {
-                        texture: asset_server.get_handle(path),
-                        transform: Transform::from_translation(tile_info.position),
-                        ..Default::default()
-                    }),
-                SpriteVariant::SpriteSheet(key) => commands.spawn_bundle(SpriteSheetBundle {
-                        texture_atlas: spawn(key, &sprite_handles, &mut texture_atlases, &mut textures),
-                        transform: Transform::from_translation(tile_info.position),
-                        ..Default::default()
-                    }),
-            };
-            if let Some(hitbox) = tile_info.hitbox {
-                match tile_info.tile_type {
-                    Tile::Empty => panic!("Not possible to have a hitbox on an empty tile"),
-                    Tile::Ground => { entity.insert(GroundHitbox(hitbox)); },
-                    Tile::Player => {
-                        entity.insert(SpriteTimer::from_seconds(0.2))
-                        .insert_bundle(PlayerBundle {
-                            ground_hitbox: PlayerGroundHitbox(hitbox.clone()),
-                            enemy_hitbox: PlayerEnemyHitbox(hitbox),
-                            ..Default::default()
-                        });
-                    },
-                }
-            }
-        }
-    }
-}
-
-fn spawn_characters(
-    mut commands: Commands,
     sprite_handles: Res<SpriteHandles>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
     mut textures: ResMut<Assets<Image>>,
@@ -111,63 +72,40 @@ fn spawn_characters(
             &mut textures,
         )
     };
-    let character_size = 18.0;
-    let npc_layer = 1.0;
-
-    /*
-    commands
-        .spawn_bundle(SpriteSheetBundle {
-            texture_atlas: spawn("green idle"),
-            transform: Transform::from_translation(Vec3::new(-6.0*character_size, 0.0, player_layer)),
-            ..Default::default()
-        })
-        .insert(SpriteTimer::from_seconds(0.2))
-        .insert_bundle(PlayerBundle {
-            ground_hitbox: PlayerGroundHitbox(Hitbox {
-                relative_position: Vec3::default(),
-                size: Vec2::new(character_size, character_size), //TODO: better values
-            }),
-            enemy_hitbox: PlayerEnemyHitbox(Hitbox {
-                relative_position: Vec3::default(),
-                size: Vec2::new(character_size, character_size), //TODO: better values
-            }),
-            ..Default::default()
-        });
-    */
-    commands
-        .spawn_bundle(SpriteSheetBundle {
-            texture_atlas: spawn("blue"),
-            transform: Transform::from_translation(Vec3::new(-4.0*character_size, 0.0, npc_layer)),
-            ..Default::default()
-        })
-        .insert(SpriteTimer::from_seconds(0.2));
-    commands
-        .spawn_bundle(SpriteSheetBundle {
-            texture_atlas: spawn("pink"),
-            transform: Transform::from_translation(Vec3::new(-2.0*character_size, 0.0, npc_layer)),
-            ..Default::default()
-        })
-        .insert(SpriteTimer::from_seconds(0.2));
-    commands
-        .spawn_bundle(SpriteSheetBundle {
-            texture_atlas: spawn("yellow"),
-            transform: Transform::from_translation(Vec3::new(0.0*character_size, 0.0, npc_layer)),
-            ..Default::default()
-        })
-        .insert(SpriteTimer::from_seconds(0.2));
-    commands
-        .spawn_bundle(SpriteSheetBundle {
-            texture_atlas: spawn("jeremy"),
-            transform: Transform::from_translation(Vec3::new(2.0*character_size, 0.0, npc_layer)),
-            ..Default::default()
-        })
-        .insert(SpriteTimer::from_seconds(0.5));
-    commands
-        .spawn_bundle(SpriteSheetBundle {
-            texture_atlas: spawn("block"),
-            transform: Transform::from_translation(Vec3::new(4.0*character_size, 0.0, npc_layer)),
-            ..Default::default()
-        });
+    for tile_info in read_map().tile_info_iter() {
+        if let Some(tile_info) = tile_info {
+            let mut entity = commands.spawn();
+            match tile_info.image {
+                SpriteVariant::Sprite(path) => entity.insert_bundle(SpriteBundle {
+                        texture: asset_server.get_handle(path),
+                        transform: Transform::from_translation(tile_info.position),
+                        ..Default::default()
+                    }),
+                SpriteVariant::SpriteSheet(key) => entity.insert_bundle(SpriteSheetBundle {
+                        texture_atlas: spawn(key),
+                        transform: Transform::from_translation(tile_info.position),
+                        ..Default::default()
+                    })
+                    .insert(SpriteTimer::from_seconds(0.2)),
+            };
+            if let Some(hitbox) = tile_info.hitbox {
+                match tile_info.tile_type {
+                    Tile::Empty => panic!("Not possible to have a hitbox on an empty tile"),
+                    Tile::Ground => { entity.insert(GroundHitbox(hitbox)); },
+                    Tile::Player => {
+                        entity.insert_bundle(PlayerBundle {
+                            ground_hitbox: PlayerGroundHitbox(hitbox.clone()),
+                            enemy_hitbox: PlayerEnemyHitbox(hitbox),
+                            ..Default::default()
+                        });
+                    },
+                    Tile::Npc(_) => {
+                        todo!()
+                    },
+                }
+            }
+        }
+    }
 }
 
 fn animation(
