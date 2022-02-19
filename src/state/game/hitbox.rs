@@ -5,7 +5,7 @@ trait Collide {
     fn collide<T: Collide>(&self, other: &T) -> Option<CollisionType>;
 }
 
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub struct Hitbox {
     pub relative_position: Vec3,
     pub size: Vec2,

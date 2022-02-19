@@ -8,6 +8,7 @@ use crate::sprite::SpriteVariant;
 pub enum Tile {
     Empty,
     Ground,
+    Player,
 }
 
 impl Tile {
@@ -23,6 +24,7 @@ impl Tile {
 pub struct TileInfo {
     pub tile_type: Tile,
     pub position: Vec3,
+    pub image_key: &'static str,
     pub image: SpriteVariant,
     pub hitbox: Option<Hitbox>,
 }
@@ -63,7 +65,10 @@ impl Map {
     pub fn get_tile_info(&self, i: usize, j: usize) -> Option<TileInfo> {
         use crate::sprite::SPRITES;
 
-        let start_point = Vec3::new(-Tile::SIZE * 20.0,-Tile::SIZE * (Self::HEIGHT/2) as f32, 0.5);
+        let position = |layer| {
+            let start_point = Vec3::new(-20.0 * Tile::SIZE,-((Self::HEIGHT/2) as f32) * Tile::SIZE, layer);
+            start_point + Tile::SIZE * Vec3::new(i as f32, j as f32, 0.0)
+        };
 
         let ground_type = "ground";
         let tile = self[i][j];
@@ -78,7 +83,7 @@ impl Map {
                 let below_right = tile.connects_to(self.below_right(i, j));
                 let above_left = tile.connects_to(self.above_left(i, j));
                 let above_right = tile.connects_to(self.above_right(i, j));
-                let image = match (above, left, right, below) {
+                let image_key = match (above, left, right, below) {
                     (false, false, false, false) => "grass alone",
                     (false, true, false, false) => "grass left",
                     (false, false, true, false) => "grass right",
@@ -103,8 +108,7 @@ impl Map {
                         (_, _, _, _) => "full",
                     }
                 };
-                let position = start_point + Tile::SIZE * Vec3::new(i as f32, j as f32, 0.0);
-                let hitbox = if image == "full" {
+                let hitbox = if image_key == "full" {
                     None
                 } else {
                     Some(Hitbox {
@@ -114,11 +118,24 @@ impl Map {
                 };
                 Some(TileInfo {
                     tile_type: tile,
-                    position,
-                    image: SpriteVariant::Sprite(SPRITES[ground_type][image]),
+                    position: position(0.5),
+                    image_key,
+                    image: SpriteVariant::Sprite(SPRITES[ground_type][image_key]),
                     hitbox,
                 })
-            }
+            },
+            Tile::Player => {
+                Some(TileInfo {
+                    tile_type: tile,
+                    position: position(2.0),
+                    image_key: "green idle",
+                    image: SPRITES["green idle"].clone(), //TODO: remove unnecessary clone since all this data is static
+                    hitbox: Some(Hitbox {
+                        relative_position: Vec3::default(), //TODO: better values
+                        size: Vec2::new(Tile::SIZE, Tile::SIZE), //TODO: better values
+                    }),
+                })
+            },
         }
     }
     pub fn tile_info_iter(&self) -> impl Iterator<Item = Option<TileInfo>> + '_ {
@@ -162,7 +179,7 @@ const LEVEL_0: Map = Map { values: [
     [Tile::Ground, Tile::Ground, Tile::Ground, Tile::Ground, Tile::Ground, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty],
     [Tile::Ground, Tile::Ground, Tile::Ground, Tile::Ground, Tile::Ground, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty],
     [Tile::Ground, Tile::Ground, Tile::Ground, Tile::Ground, Tile::Ground, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty],
-    [Tile::Ground, Tile::Ground, Tile::Ground, Tile::Ground, Tile::Ground, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty],
+    [Tile::Ground, Tile::Ground, Tile::Ground, Tile::Ground, Tile::Ground, Tile::Player, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty],
     [Tile::Ground, Tile::Ground, Tile::Ground, Tile::Ground, Tile::Ground, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty],
     [Tile::Ground, Tile::Ground, Tile::Ground, Tile::Ground, Tile::Ground, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty],
     [Tile::Ground, Tile::Ground, Tile::Ground, Tile::Ground, Tile::Ground, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty, Tile::Empty],

@@ -61,21 +61,36 @@ fn spawn_background(
 fn spawn_map(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
+    sprite_handles: Res<SpriteHandles>,
+    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
+    mut textures: ResMut<Assets<Image>>,
 ) {
     for tile_info in read_map().tile_info_iter() {
         if let Some(tile_info) = tile_info {
             let mut entity = match tile_info.image {
                 SpriteVariant::Sprite(path) => commands.spawn_bundle(SpriteBundle {
-                    texture: asset_server.get_handle(path),
-                    transform: Transform::from_translation(tile_info.position),
-                    ..Default::default()
-                }),
-                SpriteVariant::SpriteSheet(_) => todo!(),
+                        texture: asset_server.get_handle(path),
+                        transform: Transform::from_translation(tile_info.position),
+                        ..Default::default()
+                    }),
+                SpriteVariant::SpriteSheet(map) => commands.spawn_bundle(SpriteSheetBundle {
+                        texture_atlas: spawn(tile_info.image_key, &sprite_handles, &mut texture_atlases, &mut textures),
+                        transform: Transform::from_translation(tile_info.position),
+                        ..Default::default()
+                    }),
             };
             if let Some(hitbox) = tile_info.hitbox {
                 match tile_info.tile_type {
                     Tile::Empty => panic!("Not possible to have a hitbox on an empty tile"),
                     Tile::Ground => { entity.insert(GroundHitbox(hitbox)); },
+                    Tile::Player => {
+                        entity.insert(SpriteTimer::from_seconds(0.2))
+                        .insert_bundle(PlayerBundle {
+                            ground_hitbox: PlayerGroundHitbox(hitbox.clone()),
+                            enemy_hitbox: PlayerEnemyHitbox(hitbox),
+                            ..Default::default()
+                        });
+                    },
                 }
             }
         }
@@ -97,9 +112,9 @@ fn spawn_characters(
         )
     };
     let character_size = 18.0;
-    let player_layer = 2.0;
     let npc_layer = 1.0;
 
+    /*
     commands
         .spawn_bundle(SpriteSheetBundle {
             texture_atlas: spawn("green idle"),
@@ -118,6 +133,7 @@ fn spawn_characters(
             }),
             ..Default::default()
         });
+    */
     commands
         .spawn_bundle(SpriteSheetBundle {
             texture_atlas: spawn("blue"),

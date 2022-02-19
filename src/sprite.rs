@@ -29,6 +29,7 @@ impl SpriteTimer {
     }
 }
 
+#[derive(Clone)]
 pub enum SpriteVariant {
     Sprite(&'static str),
     SpriteSheet(HashMap<&'static str, &'static str>)
