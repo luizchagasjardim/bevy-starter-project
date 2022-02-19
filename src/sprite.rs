@@ -32,100 +32,90 @@ impl SpriteTimer {
 #[derive(Clone)]
 pub enum SpriteVariant {
     Sprite(&'static str),
-    SpriteSheet(HashMap<&'static str, &'static str>)
-}
-
-impl std::ops::Index<&'static str> for SpriteVariant {
-    type Output = &'static str;
-    fn index(&self, key: &'static str) -> &Self::Output {
-        match self {
-            SpriteVariant::Sprite(s) => s,
-            SpriteVariant::SpriteSheet(map) => &map[key],
-        }
-    }
+    SpriteSheet(&'static str)
 }
 
 lazy_static!{
 //TODO: maybe use enums instead of strings lol
-pub static ref SPRITES: HashMap<&'static str, SpriteVariant> = HashMap::from([
-    ("blue background", SpriteVariant::SpriteSheet(HashMap::from([
+pub static ref SPRITES: HashMap<&'static str, HashMap<&'static str, &'static str>> = HashMap::from([
+    ("blue background", HashMap::from([
         ("empty", "pixel-platformer/Background/background_0000.png"),
         ("half", "pixel-platformer/Background/background_0001.png"),
         ("full", "pixel-platformer/Background/background_0002.png"),
-    ]))),
-    ("brown background", SpriteVariant::SpriteSheet(HashMap::from([
+    ])),
+    ("brown background", HashMap::from([
         ("empty", "pixel-platformer/Background/background_0003.png"),
         ("half", "pixel-platformer/Background/background_0004.png"),
         ("full", "pixel-platformer/Background/background_0005.png"),
-    ]))),
-    ("white background", SpriteVariant::SpriteSheet(HashMap::from([
+    ])),
+    ("white background", HashMap::from([
         ("empty", "pixel-platformer/Background/background_0006.png"),
         ("half", "pixel-platformer/Background/background_0007.png"),
         ("full", "pixel-platformer/Background/background_0008.png"),
-    ]))),
-    ("green background", SpriteVariant::SpriteSheet(HashMap::from([
+    ])),
+    ("green background", HashMap::from([
         ("empty", "pixel-platformer/Background/background_0009.png"),
         ("half", "pixel-platformer/Background/background_0010.png"),
         ("full", "pixel-platformer/Background/background_0011.png"),
-    ]))),
-    ("green idle", SpriteVariant::SpriteSheet(HashMap::from([
+    ])),
+    ("green idle", HashMap::from([
         ("closed", "pixel-platformer/Characters/character_0000.png"),
-    ]))),
-    ("green walk", SpriteVariant::SpriteSheet(HashMap::from([
+    ])),
+    ("green walk", HashMap::from([
         ("closed", "pixel-platformer/Characters/character_0000.png"),
         ("open", "pixel-platformer/Characters/character_0001.png"),
-    ]))),
-    ("green jump", SpriteVariant::SpriteSheet(HashMap::from([
+    ])),
+    ("green jump", HashMap::from([
         ("open", "pixel-platformer/Characters/character_0001.png"),
-    ]))),
-    ("blue", SpriteVariant::SpriteSheet(HashMap::from([
+    ])),
+    ("blue", HashMap::from([
         ("closed", "pixel-platformer/Characters/character_0002.png"),
         ("open", "pixel-platformer/Characters/character_0003.png"),
-    ]))),
-    ("pink", SpriteVariant::SpriteSheet(HashMap::from([
+    ])),
+    ("pink", HashMap::from([
         ("closed", "pixel-platformer/Characters/character_0004.png"),
         ("open", "pixel-platformer/Characters/character_0005.png"),
-    ]))),
-    ("yellow", SpriteVariant::SpriteSheet(HashMap::from([
+    ])),
+    ("yellow", HashMap::from([
         ("closed", "pixel-platformer/Characters/character_0006.png"),
         ("open", "pixel-platformer/Characters/character_0007.png"),
-    ]))),
-    ("spike ball", SpriteVariant::SpriteSheet(HashMap::from([
+    ])),
+    ("spike ball", HashMap::from([
         ("idle", "pixel-platformer/Characters/character_0008.png"),
-    ]))),
-    ("beige", SpriteVariant::SpriteSheet(HashMap::from([
+    ])),
+    ("beige", HashMap::from([
         ("closed", "pixel-platformer/Characters/character_0009.png"),
         ("open", "pixel-platformer/Characters/character_0010.png"),
-    ]))),
-    ("fish", SpriteVariant::SpriteSheet(HashMap::from([
+    ])),
+    ("fish", HashMap::from([
         ("closed", "pixel-platformer/Characters/character_0011.png"),
         ("open", "pixel-platformer/Characters/character_0012.png"),
-    ]))),
-    ("block", SpriteVariant::SpriteSheet(HashMap::from([
+    ])),
+    ("block", HashMap::from([
         ("surprised", "pixel-platformer/Characters/character_0013.png"),
         ("pissed", "pixel-platformer/Characters/character_0014.png"),
-    ]))),
-    ("hedgehog", SpriteVariant::SpriteSheet(HashMap::from([
+    ])),
+    ("hedgehog", HashMap::from([
         ("idle0", "pixel-platformer/Characters/character_0015.png"),
         ("idle1", "pixel-platformer/Characters/character_0016.png"),
         ("idle2", "pixel-platformer/Characters/character_0017.png"),
-    ]))),
-    ("baby jeremy", SpriteVariant::SpriteSheet(HashMap::from([
+    ])),
+    ("baby jeremy", HashMap::from([
         ("idle0", "pixel-platformer/Characters/character_0018.png"),
         ("idle1", "pixel-platformer/Characters/character_0019.png"),
         ("idle2", "pixel-platformer/Characters/character_0020.png"),
-    ]))),
-    ("jeremy", SpriteVariant::SpriteSheet(HashMap::from([
+    ])),
+    ("jeremy", HashMap::from([
         ("idle0", "pixel-platformer/Characters/character_0021.png"),
         ("idle1", "pixel-platformer/Characters/character_0022.png"),
         ("idle2", "pixel-platformer/Characters/character_0023.png"),
-    ]))),
-    ("angel", SpriteVariant::SpriteSheet(HashMap::from([
+    ])),
+    ("angel", HashMap::from([
         ("idle0", "pixel-platformer/Characters/character_0024.png"),
         ("idle1", "pixel-platformer/Characters/character_0025.png"),
         ("idle2", "pixel-platformer/Characters/character_0026.png"),
-    ]))),
-    ("ground", SpriteVariant::SpriteSheet(HashMap::from([
+    ])),
+    ("ground", HashMap::from([
         ("grass alone", "pixel-platformer/Tiles/tile_0000.png"),
         ("grass right", "pixel-platformer/Tiles/tile_0001.png"),
         ("grass left right", "pixel-platformer/Tiles/tile_0002.png"),
@@ -146,22 +136,19 @@ pub static ref SPRITES: HashMap<&'static str, SpriteVariant> = HashMap::from([
         ("below right empty", "pixel-platformer/Tiles/tile_0004.png"),
         ("above left empty", "pixel-platformer/Tiles/tile_0025.png"),
         ("above right empty", "pixel-platformer/Tiles/tile_0024.png"),
-    ]))),
-    ("heart", SpriteVariant::SpriteSheet(HashMap::from([
+    ])),
+    ("heart", HashMap::from([
         ("full", "pixel-platformer/Tiles/tile_0044.png"),
         ("half", "pixel-platformer/Tiles/tile_0045.png"),
         ("empty", "pixel-platformer/Tiles/tile_0046.png"),
-    ]))),
+    ])),
 ]);
 }
 
 pub fn load_sprites(name: &str, asset_server: &Res<AssetServer>) -> Vec<Handle<Image>> {
-    match &SPRITES[name] {
-        SpriteVariant::Sprite(path) => vec![asset_server.load(*path)],
-        SpriteVariant::SpriteSheet(map) => map.iter().map(
+    SPRITES[name].iter().map(
             |(_, &path)| asset_server.load(path)
-        ).collect(),
-    }
+        ).collect()
 }
 
 pub fn spawn(

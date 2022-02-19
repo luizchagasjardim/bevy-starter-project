@@ -24,7 +24,6 @@ impl Tile {
 pub struct TileInfo {
     pub tile_type: Tile,
     pub position: Vec3,
-    pub image_key: &'static str,
     pub image: SpriteVariant,
     pub hitbox: Option<Hitbox>,
 }
@@ -119,7 +118,6 @@ impl Map {
                 Some(TileInfo {
                     tile_type: tile,
                     position: position(0.5),
-                    image_key,
                     image: SpriteVariant::Sprite(SPRITES[ground_type][image_key]),
                     hitbox,
                 })
@@ -128,8 +126,7 @@ impl Map {
                 Some(TileInfo {
                     tile_type: tile,
                     position: position(2.0),
-                    image_key: "green idle",
-                    image: SPRITES["green idle"].clone(), //TODO: remove unnecessary clone since all this data is static
+                    image: SpriteVariant::SpriteSheet("green idle"),
                     hitbox: Some(Hitbox {
                         relative_position: Vec3::default(), //TODO: better values
                         size: Vec2::new(Tile::SIZE, Tile::SIZE), //TODO: better values

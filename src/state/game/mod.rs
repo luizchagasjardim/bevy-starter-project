@@ -73,8 +73,8 @@ fn spawn_map(
                         transform: Transform::from_translation(tile_info.position),
                         ..Default::default()
                     }),
-                SpriteVariant::SpriteSheet(map) => commands.spawn_bundle(SpriteSheetBundle {
-                        texture_atlas: spawn(tile_info.image_key, &sprite_handles, &mut texture_atlases, &mut textures),
+                SpriteVariant::SpriteSheet(key) => commands.spawn_bundle(SpriteSheetBundle {
+                        texture_atlas: spawn(key, &sprite_handles, &mut texture_atlases, &mut textures),
                         transform: Transform::from_translation(tile_info.position),
                         ..Default::default()
                     }),
