@@ -29,8 +29,10 @@ impl Plugin for Game {
             .add_system_set(SystemSet::on_update(AppState::Game).with_system(player_spritesheet))
             .add_system_set(SystemSet::on_update(AppState::Game).with_system(input))
             .add_system_set(SystemSet::on_update(AppState::Game).with_system(player_ground_collision))
+            .add_system_set(SystemSet::on_update(AppState::Game).with_system(player_enemy_collision))
             .add_system_set(SystemSet::on_update(AppState::Game).with_system(movement))
-            .add_system_set(SystemSet::on_update(AppState::Game).with_system(camera_movement));
+            .add_system_set(SystemSet::on_update(AppState::Game).with_system(camera_movement))
+            .add_system_set(SystemSet::on_update(AppState::Game).with_system(out_of_bounds));
     }
 }
 
@@ -99,6 +101,7 @@ fn load_level(
                             ..Default::default()
                         });
                     },
+                    Tile::Blue => { entity.insert(EnemyHitbox(hitbox)); },
                     Tile::Npc(_) => {
                         todo!()
                     },
@@ -224,6 +227,46 @@ fn player_ground_collision(
                     },
                 };
             }
+        }
+    }
+}
+
+fn player_enemy_collision(
+    mut state: ResMut<State<AppState>>,
+    mut commands: Commands,
+    enemy_query: Query<(Entity, &EnemyHitbox, &Transform), Without<PlayerGroundHitbox>>,
+    mut player_query: Query<(&PlayerCharacter, &PlayerGroundHitbox, &Transform, &mut Velocity), Without<GroundHitbox>>,
+) {
+    for (_, player_hitbox, player_transform, mut player_velocity) in player_query.iter_mut() {
+        for (enemy_id, enemy_hitbox, enemy_transform) in enemy_query.iter() {
+            if let Some(collision) = player_hitbox.0.collide(&player_transform.translation, &enemy_hitbox.0, &enemy_transform.translation) {
+                match collision.collision_type {
+                    CollisionType::Bottom => {
+                        //TODO: change player and enemy states so that some animation plays or there is a chance to jump again or something
+                        commands.entity(enemy_id).despawn();
+                        player_velocity.0.y *= -1.0;
+                    },
+                    _ => { state.set(AppState::GameOver).unwrap(); },
+                };
+            }
+        }
+    }
+}
+
+fn out_of_bounds(
+    mut state: ResMut<State<AppState>>,
+    windows: Res<Windows>,
+    player_query: Query<(&PlayerCharacter, &Transform)>,
+    camera_query: Query<(&Camera, &Transform), Without<PlayerCharacter>>,
+) {
+    let (_, camera_position) = camera_query.single();
+
+    let window = windows.get_primary().unwrap();
+    let screen_bottom = camera_position.translation.y - window.height() / 2.0;
+
+    for (_, transform) in player_query.iter() {
+        if transform.translation.y < screen_bottom {
+            state.set(AppState::GameOver).unwrap();
         }
     }
 }

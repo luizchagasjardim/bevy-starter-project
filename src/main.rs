@@ -26,6 +26,7 @@ fn main() {
         .add_plugins(DefaultPlugins)
         .add_plugin(Loading)
         .add_plugin(Game)
+        .add_plugin(GameOver)
         .run();
 }
 
