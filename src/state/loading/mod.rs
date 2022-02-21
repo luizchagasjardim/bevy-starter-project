@@ -1,6 +1,7 @@
 use bevy::asset::LoadState;
 use bevy::prelude::*;
 
+use crate::camera::MainCamera;
 use crate::state::AppState;
 use crate::sprite::*;
 
@@ -40,7 +41,8 @@ fn check_preloaded_textures(
 }
 
 fn spawn_camera(mut commands: Commands) {
-    commands.spawn_bundle(OrthographicCameraBundle::new_2d());
+    commands.spawn_bundle(OrthographicCameraBundle::new_2d())
+        .insert(MainCamera);
 }
 
 fn setup_loading_bar(

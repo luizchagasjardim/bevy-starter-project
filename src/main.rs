@@ -2,8 +2,9 @@
 
 use bevy::prelude::*;
 
-mod sprite;
+mod camera;
 
+mod sprite;
 use sprite::SpriteHandles;
 
 mod state;

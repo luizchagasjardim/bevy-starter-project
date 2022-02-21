@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 
+use crate::camera::MainCamera;
 use crate::state::AppState;
 use crate::sprite::*;
 
@@ -178,7 +179,7 @@ fn movement(
 fn camera_movement(
     windows: Res<Windows>,
     player_query: Query<(&PlayerCharacter, &Transform)>,
-    mut camera_query: Query<(&Camera, &mut Transform), Without<PlayerCharacter>>,
+    mut camera_query: Query<(&MainCamera, &mut Transform), Without<PlayerCharacter>>,
 ) {
     let window = windows.get_primary().unwrap();
     let horizontal_limit = window.width() * 0.3;
@@ -257,7 +258,7 @@ fn out_of_bounds(
     mut state: ResMut<State<AppState>>,
     windows: Res<Windows>,
     player_query: Query<(&PlayerCharacter, &Transform)>,
-    camera_query: Query<(&Camera, &Transform), Without<PlayerCharacter>>,
+    camera_query: Query<(&MainCamera, &Transform), Without<PlayerCharacter>>,
 ) {
     let (_, camera_position) = camera_query.single();
 
