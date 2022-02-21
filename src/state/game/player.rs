@@ -1,4 +1,7 @@
 use bevy::prelude::*;
+
+use crate::controls::Controls;
+
 use super::direction::Direction;
 use super::hitbox::{PlayerGroundHitbox, PlayerEnemyHitbox};
 use super::velocity::Velocity;
@@ -71,22 +74,5 @@ impl PlayerCharacter {
             State::InTheAir(_) => "green jump",
         };
         Some(spritesheet)
-    }
-}
-
-#[derive(Component)]
-pub struct Controls {
-    pub left: KeyCode,
-    pub right: KeyCode,
-    pub jump: KeyCode,
-}
-
-impl Default for Controls {
-    fn default() -> Self {
-        Controls {
-            left: KeyCode::A,
-            right: KeyCode::D,
-            jump: KeyCode::Space,
-        }
     }
 }

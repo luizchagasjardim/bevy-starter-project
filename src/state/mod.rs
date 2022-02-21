@@ -4,6 +4,7 @@ pub enum AppState {
     Loading,
     Game,
     GameOver,
+    Pause,
 }
 
 mod game;
@@ -12,3 +13,5 @@ mod loading;
 pub use loading::Loading;
 mod game_over;
 pub use game_over::GameOver;
+mod pause;
+pub use pause::Pause;

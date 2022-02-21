@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 
 use crate::camera::MainCamera;
+use crate::controls::Controls;
 use crate::state::AppState;
 use crate::sprite::*;
 

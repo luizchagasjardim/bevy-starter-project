@@ -4,6 +4,8 @@ use bevy::prelude::*;
 
 mod camera;
 
+mod controls;
+
 mod sprite;
 use sprite::SpriteHandles;
 
@@ -28,6 +30,7 @@ fn main() {
         .add_plugin(Loading)
         .add_plugin(Game)
         .add_plugin(GameOver)
+        .add_plugin(Pause)
         .run();
 }
 

@@ -38,10 +38,6 @@ fn show_text(
         });
 }
 
-const NORMAL_BUTTON: Color = Color::rgb(0.15, 0.15, 0.15);
-const HOVERED_BUTTON: Color = Color::rgb(0.25, 0.25, 0.25);
-const PRESSED_BUTTON: Color = Color::rgb(0.35, 0.75, 0.35);
-
 fn show_button(
     mut commands: Commands,
     asset_server: Res<AssetServer>
@@ -56,7 +52,6 @@ fn show_button(
                 align_items: AlignItems::Center,
                 ..Default::default()
             },
-            color: NORMAL_BUTTON.into(),
             ..Default::default()
         })
         .with_children(|parent| {
@@ -82,11 +77,11 @@ fn button(
 ) {
     for (interaction, mut color) in query.iter_mut() {
         *color = match *interaction {
-            Interaction::Hovered => HOVERED_BUTTON.into(),
-            Interaction::None => NORMAL_BUTTON.into(),
+            Interaction::Hovered => Color::DARK_GRAY.into(),
+            Interaction::None => Color::rgb(0.15, 0.15, 0.15).into(),
             Interaction::Clicked => {
                 state.set(AppState::Game).unwrap();
-                PRESSED_BUTTON.into()
+                Color::DARK_GRAY.into()
             },
         }
     }
