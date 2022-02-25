@@ -15,7 +15,7 @@ To manage itch.io uploads from the command line, install [butler](https://itch.i
 ## Run locally
 
 ```bash
-cargo run --target wasm32-unknown-unknown
+cargo run
 ```
 
 ## Deploy
@@ -23,8 +23,9 @@ Does not work for me on Firefox for some reason, but works on Chrome.
 
 ### Build
 ```bash
-cargo build --release --target wasm32-unknown-unknown
+cargo build --release
 wasm-bindgen --out-dir out/pkg --target web target/wasm32-unknown-unknown/release/bevy_starter_project.wasm
+rsync -a assets/ out/assets/
 ```
 
 ### Deploy locally
@@ -39,8 +40,15 @@ Build, then run this:
 ```bash
 butler login # follow the instructions
 zip -r bevy-starter-project.zip out
-butler push bevy_starter_project.zip <user>/bevy-starter-project:html
+butler push bevy-starter-project.zip <user>/bevy-starter-project:html
 ```
 If this is the first time uploading to the html channel,
 you need to go to the game page on itch.io and click on _Edit game_,
 then set it to playable in the browser.
+
+# TODO
+
+* Go through the code and fix everything marked with a TODO
+* Fix compilation targeting desktop
+* Fix bug where character can keep in the air if you jump into a corner and hold into a wall
+* Add scripts or cargo make commands to do stuff

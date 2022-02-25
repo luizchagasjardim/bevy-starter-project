@@ -174,9 +174,9 @@ checksum = "904dfeac50f3cdaba28fc6f57fdcddb75f49ed61346676a78c4ffe55877802fd"
 
 [[package]]
 name = "bevy"
-version = "0.6.0"
+version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b77ad2987710ed960746c43813ad8c103db5c4c090f5cbc9c32c0a90a91bc599"
+checksum = "97342ea2f3bad36be2ded1d1fbd569ff83147b70697f12f1579e87a7480afa36"
 dependencies = [
  "bevy_internal",
 ]
@@ -224,7 +224,7 @@ dependencies = [
  "crossbeam-channel",
  "downcast-rs",
  "js-sys",
- "ndk-glue 0.5.0",
+ "ndk-glue 0.5.1",
  "notify",
  "parking_lot",
  "rand",
@@ -282,9 +282,9 @@ dependencies = [
 
 [[package]]
 name = "bevy_crevice"
-version = "0.6.0"
+version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "06d3eeb3237df793e8e01a110ee71824eacd15421821f9b175f3bafca864614c"
+checksum = "c684de72f710da0a701d1d2fe2a481241709d66f43215bcc9d7f9f0818d1cb15"
 dependencies = [
  "bevy-crevice-derive",
  "bytemuck",
@@ -318,9 +318,9 @@ dependencies = [
 
 [[package]]
 name = "bevy_ecs"
-version = "0.6.0"
+version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6b182092396e6c2caf5ab30d738511fcd382628aa86ef35878d28fabb325c933"
+checksum = "6daf05da2680a14b17a4b669879fa7186abb80e7fbe400fb02c0c62628d1e200"
 dependencies = [
  "async-channel",
  "bevy_ecs_macros",
@@ -427,7 +427,7 @@ dependencies = [
  "bevy_utils",
  "bevy_window",
  "bevy_winit",
- "ndk-glue 0.5.0",
+ "ndk-glue 0.5.1",
 ]
 
 [[package]]
@@ -468,9 +468,9 @@ dependencies = [
 
 [[package]]
 name = "bevy_pbr"
-version = "0.6.0"
+version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1f5c00c4d1d806a93caf554c28ca9708cc6717463a63dd400e70b106918bd32c"
+checksum = "41724d89746d54f7f8c8e522f9d0b1232a8a289e0d270482175d23774dc2362a"
 dependencies = [
  "bevy_app",
  "bevy_asset",
@@ -519,9 +519,9 @@ dependencies = [
 
 [[package]]
 name = "bevy_render"
-version = "0.6.0"
+version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4175b9afe0963d04d485980438f631c1e2b02d3a57f58503b8e9239c44d5c2bf"
+checksum = "ac0d5409e5e3d48f3192f78e37bedea29aa0c674083e51aaa7e945496913d2c2"
 dependencies = [
  "anyhow",
  "bevy_app",
@@ -604,6 +604,8 @@ version = "0.1.0"
 dependencies = [
  "bevy",
  "console_error_panic_hook",
+ "lazy_static",
+ "wasm-bindgen",
 ]
 
 [[package]]
@@ -660,9 +662,9 @@ dependencies = [
 
 [[package]]
 name = "bevy_ui"
-version = "0.6.0"
+version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9f30583acee76b40bf1961ece57887ba067becc1e4694ef5dddf18ce2c038886"
+checksum = "dbdb34595bd7be349fba8038b970acbe632f70b98737318b2327c7c7cd557767"
 dependencies = [
  "bevy_app",
  "bevy_asset",
@@ -715,9 +717,9 @@ dependencies = [
 
 [[package]]
 name = "bevy_winit"
-version = "0.6.0"
+version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "699c927ef5422a09b71134e5907497117210fe5063676fc7250b7551926f4bba"
+checksum = "d0d4a4bed46200615e070897a551d2389d49cdaff048e825e7fa6caef4dc57c6"
 dependencies = [
  "approx",
  "bevy_app",
@@ -835,9 +837,9 @@ dependencies = [
 
 [[package]]
 name = "cc"
-version = "1.0.72"
+version = "1.0.73"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "22a9137b95ea06864e018375b72adfb7db6e6f68cfc8df5a04d00288050485ee"
+checksum = "2fff2a6927b3bb87f9595d67196a70493f627687a71d87a0d692242c33f58c11"
 dependencies = [
  "jobserver",
 ]
@@ -1100,7 +1102,7 @@ dependencies = [
  "libc",
  "mach 0.3.2",
  "ndk 0.6.0",
- "ndk-glue 0.6.0",
+ "ndk-glue 0.6.1",
  "nix",
  "oboe",
  "parking_lot",
@@ -1743,9 +1745,9 @@ dependencies = [
 
 [[package]]
 name = "libc"
-version = "0.2.117"
+version = "0.2.118"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e74d72e0f9b65b5b4ca49a346af3976df0f9c61d550727f349ecd559f251a26c"
+checksum = "06e509672465a0504304aa87f9f176f2b2b716ed8fb105ebe5c02dc6dce96a94"
 
 [[package]]
 name = "libloading"
@@ -1953,30 +1955,38 @@ dependencies = [
 ]
 
 [[package]]
-name = "ndk-glue"
-version = "0.5.0"
+name = "ndk-context"
+version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fc291b8de2095cba8dab7cf381bf582ff4c17a09acf854c32e46545b08085d28"
+checksum = "4e3c5cc68637e21fe8f077f6a1c9e0b9ca495bb74895226b476310f613325884"
+
+[[package]]
+name = "ndk-glue"
+version = "0.5.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a1c68f70683c5fc9a747a383744206cd371741b2f0b31781ab6770487ec572e2"
 dependencies = [
  "android_logger",
  "lazy_static",
  "libc",
  "log",
  "ndk 0.5.0",
+ "ndk-context",
  "ndk-macro",
  "ndk-sys 0.2.2",
 ]
 
 [[package]]
 name = "ndk-glue"
-version = "0.6.0"
+version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "04c0d14b0858eb9962a5dac30b809b19f19da7e4547d64af2b0bb051d2e55d79"
+checksum = "d9ffb7443daba48349d545028777ca98853b018b4c16624aa01223bc29e078da"
 dependencies = [
  "lazy_static",
  "libc",
  "log",
  "ndk 0.6.0",
+ "ndk-context",
  "ndk-macro",
  "ndk-sys 0.3.0",
 ]
@@ -2169,7 +2179,7 @@ checksum = "2463c8f2e19b4e0d0710a21f8e4011501ff28db1c95d7a5482a553b2100502d2"
 dependencies = [
  "jni",
  "ndk 0.6.0",
- "ndk-glue 0.6.0",
+ "ndk-glue 0.6.1",
  "num-derive",
  "num-traits",
  "oboe-sys",
@@ -2302,9 +2312,9 @@ checksum = "eb9f9e6e233e5c4a35559a617bf40a4ec447db2e84c20b55a6f83167b7e57872"
 
 [[package]]
 name = "proc-macro-crate"
-version = "1.1.0"
+version = "1.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1ebace6889caf889b4d3f76becee12e90353f2b8c7d875534a71e5742f8f6f83"
+checksum = "9dada8c9981fcf32929c3c0f0cd796a9284aca335565227ed88c83babb1d43dc"
 dependencies = [
  "thiserror",
  "toml",
@@ -2336,14 +2346,13 @@ dependencies = [
 
 [[package]]
 name = "rand"
-version = "0.8.4"
+version = "0.8.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2e7573632e6454cf6b99d7aac4ccca54be06da05aca2ef7423d22d27d4d4bcd8"
+checksum = "34af8d1a0e25924bc5b7c43c079c942339d8f0a8b57c39049bef581b46327404"
 dependencies = [
  "libc",
  "rand_chacha",
  "rand_core",
- "rand_hc",
 ]
 
 [[package]]
@@ -2363,15 +2372,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d34f1408f55294453790c48b2f1ebbb1c5b4b7563eb1f418bcfcfdbb06ebb4e7"
 dependencies = [
  "getrandom",
-]
-
-[[package]]
-name = "rand_hc"
-version = "0.3.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d51e9f596de227fda2ea6c84607f5558e196eeaf43c986b724ba4fb8fdf497e7"
-dependencies = [
- "rand_core",
 ]
 
 [[package]]
@@ -2547,9 +2547,9 @@ dependencies = [
 
 [[package]]
 name = "serde_json"
-version = "1.0.78"
+version = "1.0.79"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d23c1ba4cf0efd44be32017709280b32d1cea5c3f1275c3b6d9e8bc54f758085"
+checksum = "8e8d9fa5c3b304765ce1fd9c4c8a3de2c8db365a5b91be52f186efc675681d95"
 dependencies = [
  "itoa",
  "ryu",
@@ -3131,7 +3131,7 @@ dependencies = [
  "log",
  "mio 0.8.0",
  "ndk 0.5.0",
- "ndk-glue 0.5.0",
+ "ndk-glue 0.5.1",
  "ndk-sys 0.2.2",
  "objc",
  "parking_lot",
