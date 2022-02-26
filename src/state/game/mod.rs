@@ -48,8 +48,8 @@ fn spawn_background(
         for j in -10..11 {
             //TODO: use one big image looping or just moving with the camera instead of creating a trillion entities
             let cloud_height = 3;
-            let image = if j < cloud_height { "full" } else if j == cloud_height { "half" } else { "empty" };
-            let image = SPRITES[&SpriteType::BlueBG][image];
+            let image = if j < cloud_height { SpriteTypeStates::Full } else if j == cloud_height { SpriteTypeStates::Half } else { SpriteTypeStates::Empty };
+            let image = SPRITES[&SpriteType::BlueBG][&image];
             commands
                 .spawn_bundle(SpriteBundle {
                     texture: asset_server.get_handle(image),
