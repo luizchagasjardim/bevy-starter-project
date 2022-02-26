@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::sprite::SPRITES;
+use crate::sprite::{SPRITES, SpriteType};
 
 #[derive(Component)]
 pub struct LoadingBar {
@@ -11,11 +11,11 @@ pub struct LoadingBar {
 impl LoadingBar {
     pub fn get_image(&self, percent: f32) -> &str {
         if percent < self.lower_bound {
-            SPRITES["heart"]["empty"]
+            SPRITES[&SpriteType::Heart]["empty"]
         } else if percent >= self.upper_bound {
-            SPRITES["heart"]["full"]
+            SPRITES[&SpriteType::Heart]["full"]
         } else {
-            SPRITES["heart"]["half"]
+            SPRITES[&SpriteType::Heart]["half"]
         }
     }
 }

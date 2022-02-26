@@ -1,11 +1,13 @@
 use std::collections::HashMap;
+use std::fmt;
+use std::str::FromStr;
 
 use bevy::prelude::*;
 use bevy::asset::HandleId;
 
 #[derive(Default)]
 pub struct SpriteHandles {
-    pub handles: HashMap<&'static str, Vec<Handle<Image>>>,
+    pub handles: HashMap<String, Vec<Handle<Image>>>,
 }
 
 impl SpriteHandles {
@@ -32,90 +34,155 @@ impl SpriteTimer {
 #[derive(Clone)]
 pub enum SpriteVariant {
     Sprite(&'static str),
-    SpriteSheet(&'static str)
+    SpriteSheet(SpriteType)
+}
+#[derive(PartialEq, Eq, Hash, Debug, Clone, Copy)]
+pub enum SpriteType {
+    BlueBG,
+    BrownBG,
+    WhiteBG,
+    GreenBG,
+    IdleGreen,
+    WalkGreen,
+    JumpGreen,
+    Blue,
+    Pink,
+    Yellow,
+    Beige,
+    SpikeBall,
+    Fish,
+    Block,
+    Hedgehog,
+    BabyJeremy,
+    Jeremy,
+    Angel,
+    Ground,
+    Heart,
+}
+
+impl FromStr for SpriteType {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "BlueBG" => Ok(SpriteType::BlueBG),
+            "BrownBG" => Ok(SpriteType::BrownBG),
+            "WhiteBG" => Ok(SpriteType::WhiteBG),
+            "GreenBG" => Ok(SpriteType::GreenBG),
+            "IdleGreen" => Ok(SpriteType::IdleGreen),
+            "WalkGreen" => Ok(SpriteType::WalkGreen),
+            "JumpGreen" => Ok(SpriteType::JumpGreen),
+            "Blue" => Ok(SpriteType::Blue),
+            "Pink" => Ok(SpriteType::Pink),
+            "Yellow" => Ok(SpriteType::Yellow),
+            "Beige" => Ok(SpriteType::Beige),
+            "SpikeBall" => Ok(SpriteType::SpikeBall),
+            "Fish" => Ok(SpriteType::Fish),
+            "Block" => Ok(SpriteType::Block),
+            "Hedgehog" => Ok(SpriteType::Hedgehog),
+            "BabyJeremy" => Ok(SpriteType::BabyJeremy),
+            "Jeremy" => Ok(SpriteType::Jeremy),
+            "Angel" => Ok(SpriteType::Angel),
+            "Ground" => Ok(SpriteType::Ground),
+            "Heart" => Ok(SpriteType::Heart),
+            _ => Err(()),
+        }
+    }
+}
+
+impl fmt::Display for SpriteType {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{:?}", self)
+    }
+}
+
+pub enum SpritePhysicalStates {
+    Empty,
+    Half,
+    Full,
 }
 
 lazy_static!{
 //TODO: maybe use enums instead of strings lol
-pub static ref SPRITES: HashMap<&'static str, HashMap<&'static str, &'static str>> = HashMap::from([
-    ("blue background", HashMap::from([
+pub static ref SPRITES: HashMap<SpriteType, HashMap<&'static str, &'static str>> = HashMap::from([
+    (SpriteType::BlueBG, HashMap::from([
         ("empty", "pixel-platformer/Background/background_0000.png"),
         ("half", "pixel-platformer/Background/background_0001.png"),
         ("full", "pixel-platformer/Background/background_0002.png"),
     ])),
-    ("brown background", HashMap::from([
+    (SpriteType::BrownBG, HashMap::from([
         ("empty", "pixel-platformer/Background/background_0003.png"),
         ("half", "pixel-platformer/Background/background_0004.png"),
         ("full", "pixel-platformer/Background/background_0005.png"),
     ])),
-    ("white background", HashMap::from([
+    (SpriteType::WhiteBG, HashMap::from([
         ("empty", "pixel-platformer/Background/background_0006.png"),
         ("half", "pixel-platformer/Background/background_0007.png"),
         ("full", "pixel-platformer/Background/background_0008.png"),
     ])),
-    ("green background", HashMap::from([
+    (SpriteType::GreenBG, HashMap::from([
         ("empty", "pixel-platformer/Background/background_0009.png"),
         ("half", "pixel-platformer/Background/background_0010.png"),
         ("full", "pixel-platformer/Background/background_0011.png"),
     ])),
-    ("green idle", HashMap::from([
+    (SpriteType::IdleGreen, HashMap::from([
         ("closed", "pixel-platformer/Characters/character_0000.png"),
     ])),
-    ("green walk", HashMap::from([
+    (SpriteType::WalkGreen, HashMap::from([
         ("closed", "pixel-platformer/Characters/character_0000.png"),
         ("open", "pixel-platformer/Characters/character_0001.png"),
     ])),
-    ("green jump", HashMap::from([
+    (SpriteType::JumpGreen, HashMap::from([
         ("open", "pixel-platformer/Characters/character_0001.png"),
     ])),
-    ("blue", HashMap::from([
+    (SpriteType::Blue, HashMap::from([
         ("closed", "pixel-platformer/Characters/character_0002.png"),
         ("open", "pixel-platformer/Characters/character_0003.png"),
     ])),
-    ("pink", HashMap::from([
+    (SpriteType::Pink, HashMap::from([
         ("closed", "pixel-platformer/Characters/character_0004.png"),
         ("open", "pixel-platformer/Characters/character_0005.png"),
     ])),
-    ("yellow", HashMap::from([
+    (SpriteType::Yellow, HashMap::from([
         ("closed", "pixel-platformer/Characters/character_0006.png"),
         ("open", "pixel-platformer/Characters/character_0007.png"),
     ])),
-    ("spike ball", HashMap::from([
+    (SpriteType::SpikeBall, HashMap::from([
         ("idle", "pixel-platformer/Characters/character_0008.png"),
     ])),
-    ("beige", HashMap::from([
+    (SpriteType::Beige, HashMap::from([
         ("closed", "pixel-platformer/Characters/character_0009.png"),
         ("open", "pixel-platformer/Characters/character_0010.png"),
     ])),
-    ("fish", HashMap::from([
+    (SpriteType::Fish, HashMap::from([
         ("closed", "pixel-platformer/Characters/character_0011.png"),
         ("open", "pixel-platformer/Characters/character_0012.png"),
     ])),
-    ("block", HashMap::from([
+    (SpriteType::Block, HashMap::from([
         ("surprised", "pixel-platformer/Characters/character_0013.png"),
         ("pissed", "pixel-platformer/Characters/character_0014.png"),
     ])),
-    ("hedgehog", HashMap::from([
+    (SpriteType::Hedgehog, HashMap::from([
         ("idle0", "pixel-platformer/Characters/character_0015.png"),
         ("idle1", "pixel-platformer/Characters/character_0016.png"),
         ("idle2", "pixel-platformer/Characters/character_0017.png"),
     ])),
-    ("baby jeremy", HashMap::from([
+    (SpriteType::BabyJeremy, HashMap::from([
         ("idle0", "pixel-platformer/Characters/character_0018.png"),
         ("idle1", "pixel-platformer/Characters/character_0019.png"),
         ("idle2", "pixel-platformer/Characters/character_0020.png"),
     ])),
-    ("jeremy", HashMap::from([
+    (SpriteType::Jeremy, HashMap::from([
         ("idle0", "pixel-platformer/Characters/character_0021.png"),
         ("idle1", "pixel-platformer/Characters/character_0022.png"),
         ("idle2", "pixel-platformer/Characters/character_0023.png"),
     ])),
-    ("angel", HashMap::from([
+    (SpriteType::Angel, HashMap::from([
         ("idle0", "pixel-platformer/Characters/character_0024.png"),
         ("idle1", "pixel-platformer/Characters/character_0025.png"),
         ("idle2", "pixel-platformer/Characters/character_0026.png"),
     ])),
-    ("ground", HashMap::from([
+    (SpriteType::Ground, HashMap::from([
         ("grass alone", "pixel-platformer/Tiles/tile_0000.png"),
         ("grass right", "pixel-platformer/Tiles/tile_0001.png"),
         ("grass left right", "pixel-platformer/Tiles/tile_0002.png"),
@@ -137,7 +204,7 @@ pub static ref SPRITES: HashMap<&'static str, HashMap<&'static str, &'static str
         ("above left empty", "pixel-platformer/Tiles/tile_0025.png"),
         ("above right empty", "pixel-platformer/Tiles/tile_0024.png"),
     ])),
-    ("heart", HashMap::from([
+    (SpriteType::Heart, HashMap::from([
         ("full", "pixel-platformer/Tiles/tile_0044.png"),
         ("half", "pixel-platformer/Tiles/tile_0045.png"),
         ("empty", "pixel-platformer/Tiles/tile_0046.png"),
@@ -145,20 +212,20 @@ pub static ref SPRITES: HashMap<&'static str, HashMap<&'static str, &'static str
 ]);
 }
 
-pub fn load_sprites(name: &str, asset_server: &Res<AssetServer>) -> Vec<Handle<Image>> {
-    SPRITES[name].iter().map(
+pub fn load_sprites(name: SpriteType, asset_server: &Res<AssetServer>) -> Vec<Handle<Image>> {
+    SPRITES[&name].iter().map(
             |(_, &path)| asset_server.load(path)
         ).collect()
 }
 
 pub fn spawn(
-    name: &str,
+    name: String,
     sprite_handles: &Res<SpriteHandles>,
     texture_atlases: &mut ResMut<Assets<TextureAtlas>>,
     textures: &mut ResMut<Assets<Image>>,
 ) -> Handle<TextureAtlas> {
     let mut texture_atlas_builder = TextureAtlasBuilder::default();
-    for handle in sprite_handles.handles[name].iter() {
+    for handle in sprite_handles.handles[&name].iter() {
         let texture = textures.get(handle).unwrap();
         texture_atlas_builder.add_texture(handle.clone(), texture);
     }
