@@ -142,6 +142,9 @@ pub static ref SPRITES: HashMap<&'static str, HashMap<&'static str, &'static str
         ("half", "pixel-platformer/Tiles/tile_0045.png"),
         ("empty", "pixel-platformer/Tiles/tile_0046.png"),
     ])),
+    ("torch light", HashMap::from([
+        ("effect", "torch-light-effect.png"),
+    ])),
 ]);
 }
 
